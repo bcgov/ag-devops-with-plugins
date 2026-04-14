@@ -1,0 +1,137 @@
+flowchart TD
+    %% ─── Developer ────────────────────────────────────────────────
+    Dev(["👤 Developer"])
+
+    %% ─── Source repositories ──────────────────────────────────────
+    subgraph GitHub["GitHub"]
+        direction TB
+
+        subgraph AgDevops["ag-devops repo (this repo)"]
+            CITemplates["CI Templates\nci/dotnetcore/*.yml\n(reusable workflows + composite actions)"]
+            HelmLib["Helm Library Chart\ncd/shared-lib/ag-helm\nag-template.* entrypoints"]
+            PolicyConfigs["Policy Configs\ncd/policies/\n(Datree · Polaris · kube-linter · Rego)"]
+            ExampleChart["Example Consumer Chart\ncd/shared-lib/example-app"]
+        end
+
+        subgraph AppRepo["App Repository (consumer)"]
+            AppCode["Application Source (.NET 8)"]
+            AppChart["App Helm Chart\n(Chart.yaml + templates/ + values.yaml)"]
+            EntryWorkflow[".github/workflows/ci.yml\n(entry workflow calling shared templates)"]
+        end
+
+        subgraph GHActions["GitHub Actions"]
+            CIRunner["CI Runner\nubuntu-latest / windows-latest\n• dotnet restore / build / test / lint\n• dotnet pack / publish"]
+            CDRunner["CD Runner\nubuntu-latest\n• helm dependency update\n• helm template → rendered.yaml\n• policy checks\n• helm upgrade --install"]
+        end
+    end
+
+    %% ─── Registry ─────────────────────────────────────────────────
+    subgraph Registries["Artifact Registries"]
+        GHCR["GHCR OCI\nghcr.io/bcgov-c/helm\n• ag-helm-templates:{version}\n• app container images"]
+        NuGetFeed["GitHub Packages\nNuGet Feed\n• shared .nupkg libraries"]
+    end
+
+    %% ─── Policy tools (run inside CDRunner) ───────────────────────
+    subgraph PolicyTools["Policy Validation (run in CD pipeline)"]
+        Datree["Datree\nOrg label rules\nDataClass · AVI annotation\nowner · environment · imagePullPolicy"]
+        Polaris["Polaris\nSecurity & reliability\nsecurityContext · probes · replicas\nNetworkPolicy coverage"]
+        KubeLinter["kube-linter\nK8s lint checks\nservice selectors · RBAC\nlatest-tag · host namespaces"]
+        Conftest["Conftest / OPA (Rego)\nHard deny rules\nNetworkPolicy allow-all shapes\nRoute edge termination\nInternet egress approvals"]
+    end
+
+    %% ─── OpenShift cluster ────────────────────────────────────────
+    subgraph OpenShift["OpenShift Cluster (Emerald / target environment)"]
+        direction TB
+
+        subgraph IngressNS["openshift-ingress namespace"]
+            RouterPods["Router Pods\n(platform managed)"]
+        end
+
+        subgraph AppNS["App Namespace (deny-by-default)"]
+            direction LR
+
+            subgraph FrontendGroup["frontend"]
+                FEDeploy["Deployment\nfrontend"]
+                FESvc["Service\nClusterIP :8080"]
+                FERoute["OpenShift Route\n+ AVI annotation\n+ edge approval (if needed)"]
+                FENp["NetworkPolicy\nIngress: router pods\nEgress: → web-api :8080"]
+            end
+
+            subgraph BackendGroup["web-api"]
+                BEDeploy["Deployment\nweb-api"]
+                BESvc["Service\nClusterIP :8080"]
+                BERoute["OpenShift Route\n+ AVI annotation"]
+                BENp["NetworkPolicy\nIngress: frontend + router\nEgress: → postgresql :5432\n         → external CIDR :443"]
+                BEHPA["HPA\nautoscaling/v2"]
+                BEPDB["PDB\npolicy/v1"]
+            end
+
+            subgraph DBGroup["postgresql"]
+                DBSS["StatefulSet\npostgresql"]
+                DBSvc["Service\nClusterIP :5432"]
+                DBNp["NetworkPolicy\nIngress: web-api :5432"]
+                DBPVC["PVC\ndata volume"]
+            end
+
+            SharedSA["ServiceAccount\n(per workload)"]
+            PriorityClass["PriorityClass\nscheduling priority"]
+        end
+    end
+
+    ExternalAPI[("External API\n(HTTPS :443)\napproval required\nfor 0.0.0.0/0 egress")]
+
+    %% ─── Edges ────────────────────────────────────────────────────
+
+    %% Developer triggers
+    Dev -- "git push / PR" --> AppCode
+    Dev -- "maintains" --> AgDevops
+
+    %% App repo consumes CI templates
+    EntryWorkflow -- "calls (workflow_call\nor composite action)" --> CITemplates
+    AppCode --> CIRunner
+    EntryWorkflow --> CIRunner
+
+    %% CI outputs
+    CIRunner -- "push image" --> GHCR
+    CIRunner -- "push .nupkg" --> NuGetFeed
+
+    %% CD consumes Helm library from GHCR
+    CDRunner -- "helm dependency update\n(pulls OCI chart)" --> GHCR
+    HelmLib -- "published to OCI\non release tag" --> GHCR
+
+    %% CD runs policy tools
+    AppChart --> CDRunner
+    PolicyConfigs --> CDRunner
+    CDRunner --> Datree
+    CDRunner --> Polaris
+    CDRunner --> KubeLinter
+    CDRunner --> Conftest
+
+    %% CD deploys to OpenShift
+    CDRunner -- "helm upgrade --install\n(all checks passed)" --> AppNS
+
+    %% OpenShift runtime traffic
+    RouterPods -- "Route → Service → Pods" --> FERoute
+    RouterPods -- "Route → Service → Pods" --> BERoute
+    FERoute --> FESvc --> FEDeploy
+    BERoute --> BESvc --> BEDeploy
+    FEDeploy -- "HTTP :8080" --> BESvc
+    BEDeploy -- "TCP :5432" --> DBSvc --> DBSS
+    BEDeploy -. "HTTPS :443\n(requires approval annotations)" .-> ExternalAPI
+    DBSS --- DBPVC
+
+    %% Semantic release publishes the chart
+    AgDevops -- "Semantic Release\n(conventional commits\n→ tag → GHCR push)" --> GHCR
+
+    %% Styles
+    classDef registry fill:#f0f4ff,stroke:#4a6fa5,color:#000
+    classDef policy fill:#fff8e1,stroke:#f9a825,color:#000
+    classDef k8s fill:#e8f5e9,stroke:#388e3c,color:#000
+    classDef source fill:#fce4ec,stroke:#c62828,color:#000
+    classDef runner fill:#e3f2fd,stroke:#1565c0,color:#000
+
+    class GHCR,NuGetFeed registry
+    class Datree,Polaris,KubeLinter,Conftest policy
+    class FEDeploy,FESvc,FERoute,FENp,BEDeploy,BESvc,BERoute,BENp,BEHPA,BEPDB,DBSS,DBSvc,DBNp,DBPVC,SharedSA,PriorityClass,RouterPods k8s
+    class AppCode,AppChart,EntryWorkflow source
+    class CIRunner,CDRunner runner

@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "ag-devops-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "bcgov-c/ag-devops"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "ag-devops@ag-devops-marketplace": true
+  }
+}

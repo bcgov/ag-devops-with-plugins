@@ -1,0 +1,16 @@
+{
+  "name": "ag-devops-marketplace",
+  "description": "BC Government AG DevOps plugin marketplace — OpenShift Emerald deployment toolkit for AG application teams",
+  "owner": {
+    "name": "BC Government - Attorney General",
+    "email": "connect.richfrem@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "ag-devops",
+      "description": "OpenShift Emerald deployment toolkit: scaffold Helm charts, validate manifests against policy, author NetworkPolicies, wire up .NET 8 CI, and initialize a full repo from scratch with /ag-init",
+      "source": "./plugins/ag-devops",
+      "strict": true
+    }
+  ]
+}

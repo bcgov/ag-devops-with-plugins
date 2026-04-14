@@ -1,0 +1,42 @@
+{
+  "name": "ag-devops",
+  "description": "OpenShift Emerald deployment toolkit for AG application teams: scaffold Helm charts, validate manifests against policy, author compliant NetworkPolicies, and wire up .NET 8 CI pipelines",
+  "version": "1.0.0",
+  "author": {
+    "name": "BC Government - Attorney General",
+    "email": "connect.richfrem@gmail.com"
+  },
+  "homepage": "https://github.com/bcgov-c/ag-devops",
+  "repository": "https://github.com/bcgov-c/ag-devops",
+  "license": "Apache-2.0",
+  "keywords": [
+    "openshift",
+    "helm",
+    "kubernetes",
+    "networkpolicy",
+    "dotnet",
+    "ci-cd",
+    "policy-as-code",
+    "bcgov",
+    "emerald"
+  ],
+  "skills": [
+    "scaffold-openshift-deployment",
+    "validate-emerald-manifests",
+    "author-networkpolicy",
+    "setup-dotnet-ci",
+    "manage-marketplace"
+  ],
+  "agents": [
+    "initialize-emerald-repo",
+    "manifest-validator",
+    "helm-scaffolder"
+  ],
+  "commands": [
+    "ag-init",
+    "ag-scaffold",
+    "ag-validate",
+    "ag-networkpolicy",
+    "ag-setup-ci"
+  ]
+}

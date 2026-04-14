@@ -1,0 +1,6 @@
+{
+  "name": "ag-devops",
+  "version": "1.0.0",
+  "description": "OpenShift Emerald deployment toolkit for AG application teams",
+  "license": "Apache-2.0"
+}
