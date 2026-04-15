@@ -1,1 +1,1 @@
-../../../references/EXAMPLES.md
+C:/Users/RICHFREM/source/repos/ag-devops/plugins/ag-devops/references/EXAMPLES.md

@@ -144,3 +144,4 @@ webApi:
 **REQUIRED SUB-SKILL:** Use `author-networkpolicy` to write every NetworkPolicy in the chart.
 
 **After scaffolding:** Run `validate-emerald-manifests` to confirm all policy checks pass before committing.
+

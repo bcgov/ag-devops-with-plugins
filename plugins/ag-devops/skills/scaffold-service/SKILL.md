@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-service/scripts/generate.py --name "$NAME" --port "$PORT" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type service --name "$NAME" --port "$PORT" --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold Service
@@ -23,7 +23,7 @@ Generate a Service Helm template using `ag-template.service`. Output is written 
 ## Usage
 
 ```bash
-python plugins/ag-devops/skills/scaffold-service/scripts/generate.py \
+python ./scripts/scaffold.py --type service \
   --name web-api \
   --port 8080 \
   --output-dir gitops/templates
@@ -43,13 +43,13 @@ python plugins/ag-devops/skills/scaffold-service/scripts/generate.py \
 
 **Agent call — generate web-api service:**
 ```
-python plugins/ag-devops/skills/scaffold-service/scripts/generate.py \
+python ./scripts/scaffold.py --type service \
   --name web-api --port 8080 --output-dir gitops/templates
 ```
 
 **Agent call — generate PostgreSQL service on port 5432:**
 ```
-python plugins/ag-devops/skills/scaffold-service/scripts/generate.py \
+python ./scripts/scaffold.py --type service \
   --name postgresql --port 5432 --output-dir gitops/templates
 ```
 
@@ -57,3 +57,4 @@ python plugins/ag-devops/skills/scaffold-service/scripts/generate.py \
 
 - The `ServicePorts` fragment emits a **list item** (`- name: http ...`) — this is the required output shape for Service ports.
 - Pair with `scaffold-deployment` and `scaffold-networkpolicy` for a complete component.
+

@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-hpa/scripts/generate.py --name "$NAME" --min-replicas "$MIN" --max-replicas "$MAX" --cpu-utilization "$CPU" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type hpa --name "$NAME" --min-replicas "$MIN" --max-replicas "$MAX" --cpu-utilization "$CPU" --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold HPA
@@ -32,3 +32,4 @@ Generate a HorizontalPodAutoscaler Helm template using the `ag-template.hpa`
 
 - Requires an existing Deployment for the same component name.
 - The script prints a `values.yaml` snippet showing the required HPA configuration keys.
+

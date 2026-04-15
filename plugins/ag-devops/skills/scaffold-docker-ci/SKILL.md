@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-docker-ci/scripts/generate.py --image "$IMAGE" --registry "$REGISTRY" --context "$CONTEXT" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type docker-ci --image "$IMAGE" --registry "$REGISTRY" --context "$CONTEXT" --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold Docker CI
@@ -33,3 +33,4 @@ Generate a `.github/workflows/docker.yml` consumer workflow that calls the
 - Requires `GHCR_TOKEN` and `GHCR_USERNAME` secrets in the repository.
 - `push: true` only on push events to main; PRs only build and scan.
 - The shared workflow handles tagging automatically with `auto_tagging: true`.
+

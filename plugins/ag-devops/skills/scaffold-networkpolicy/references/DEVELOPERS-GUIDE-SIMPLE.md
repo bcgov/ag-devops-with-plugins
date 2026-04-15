@@ -1,1 +1,1 @@
-../../../references/DEVELOPERS-GUIDE-SIMPLE.md
+C:/Users/RICHFREM/source/repos/ag-devops/plugins/ag-devops/references/DEVELOPERS-GUIDE-SIMPLE.md

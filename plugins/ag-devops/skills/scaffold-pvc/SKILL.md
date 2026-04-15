@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-pvc/scripts/generate.py --name "$NAME" --size "$SIZE" --storage-class "$STORAGE_CLASS" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type pvc --name "$NAME" --size "$SIZE" --storage-class "$STORAGE_CLASS" --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold PVC
@@ -26,3 +26,4 @@ Generate a PersistentVolumeClaim Helm template using the `ag-template.pvc`
 ## Output
 
 `gitops/templates/<name>-pvc.yaml`
+

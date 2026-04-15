@@ -1,0 +1,7 @@
+{
+  "evals": [
+    { "prompt": "Generate a cronjob template for a component called my-app", "expected_contains": ["my-app"] },
+    { "prompt": "Scaffold a cronjob for the worker component", "expected_contains": ["worker"] },
+    { "prompt": "Create cronjob template with name data-processor", "expected_contains": ["data-processor"] }
+  ]
+}

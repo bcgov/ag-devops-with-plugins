@@ -147,3 +147,4 @@ For a typical 3-tier topology (`frontend` → `web-api` → `postgresql`):
 | Egress-only policy but no egress rules → egress-deny | If `PolicyTypes` includes `Egress` and you have no rules, all egress is blocked. Add at least one rule. |
 | Using `podSelector: {}` as a peer | This matches ALL pods — equivalent to allow-all. Use `apps: [{name: ...}]` instead. |
 | Setting `PolicyTypes: [Egress]` when you only care about ingress | Use `[Ingress]` to restrict only what you mean to restrict. |
+

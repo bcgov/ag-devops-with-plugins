@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-serviceaccount/scripts/generate.py --name "$NAME" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type serviceaccount --name "$NAME" --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold ServiceAccount
@@ -24,3 +24,4 @@ Generate a ServiceAccount Helm template using the `ag-template.serviceaccount`
 ## Output
 
 `gitops/templates/<name>-serviceaccount.yaml` plus a values snippet printed to stdout.
+

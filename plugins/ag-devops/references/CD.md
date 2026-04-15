@@ -1,1 +1,1 @@
-../../../docs/CD.md
+C:/Users/RICHFREM/source/repos/ag-devops/docs/CD.md

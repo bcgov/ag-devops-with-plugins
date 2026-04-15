@@ -1,0 +1,32 @@
+{{- $p := dict "Values" .Values -}}
+{{- $_ := set $p "ApplicationGroup" .Values.project -}}
+{{- $_ := set $p "Name" "@@NAME@@" -}}
+{{- $_ := set $p "Namespace" $.Release.Namespace -}}
+{{- $_ := set $p "Registry" .Values.registry -}}
+{{- $_ := set $p "ModuleValues" .Values.@@VALUES_KEY@@ -}}
+{{- $_ := set $p "Ports"  "@@NAME@@.ports" -}}
+{{- $_ := set $p "Env"    "@@NAME@@.env" -}}
+{{- $_ := set $p "Probes" "@@NAME@@.probes" -}}
+{{ include "ag-template.deployment" $p }}
+
+{{- define "@@NAME@@.ports" -}}
+- name: http
+  containerPort: @@PORT@@
+  protocol: TCP
+{{- end }}
+
+{{- define "@@NAME@@.env" -}}
+- name: ASPNETCORE_URLS
+  value: http://+:@@PORT@@
+{{- end }}
+
+{{- define "@@NAME@@.probes" -}}
+livenessProbe:
+  httpGet: { path: @@PROBE_LIVE_PATH@@, port: http }
+  initialDelaySeconds: 10
+  periodSeconds: 30
+readinessProbe:
+  httpGet: { path: @@PROBE_READY_PATH@@, port: http }
+  initialDelaySeconds: 5
+  periodSeconds: 10
+{{- end }}

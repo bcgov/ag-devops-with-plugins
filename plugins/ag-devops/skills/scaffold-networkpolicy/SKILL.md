@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py --name "$NAME" --port "$PORT" $INGRESS_FLAGS $EGRESS_FLAGS --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type networkpolicy --name "$NAME" --port "$PORT" $INGRESS_FLAGS $EGRESS_FLAGS --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold NetworkPolicy
@@ -33,7 +33,7 @@ Conftest/OPA compliance. Output is written directly to `gitops/templates/`.
 
 ```bash
 # Standard web-api: ingress from router + frontend; egress to postgresql
-python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py \
+python ./scripts/scaffold.py --type networkpolicy \
   --name web-api \
   --port 8080 \
   --ingress-from-router \
@@ -57,7 +57,7 @@ python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py \
 
 **Agent call — frontend (Route-exposed, calls web-api):**
 ```
-python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py \
+python ./scripts/scaffold.py --type networkpolicy \
   --name frontend --port 8080 \
   --ingress-from-router \
   --egress-to-apps web-api:8080 \
@@ -66,7 +66,7 @@ python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py \
 
 **Agent call — web-api (Route-exposed, called by frontend, calls postgresql):**
 ```
-python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py \
+python ./scripts/scaffold.py --type networkpolicy \
   --name web-api --port 8080 \
   --ingress-from-router --ingress-from-apps frontend \
   --egress-to-apps postgresql:5432 \
@@ -75,7 +75,7 @@ python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py \
 
 **Agent call — postgresql (receives from web-api only, no egress):**
 ```
-python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py \
+python ./scripts/scaffold.py --type networkpolicy \
   --name postgresql --port 5432 \
   --ingress-from-apps web-api \
   --output-dir gitops/templates
@@ -83,7 +83,7 @@ python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py \
 
 **Agent call — worker with approved internet egress:**
 ```
-python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py \
+python ./scripts/scaffold.py --type networkpolicy \
   --name worker --port 8081 \
   --egress-internet \
   --justification "Sends notifications to external webhook" \
@@ -106,3 +106,4 @@ python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py \
 - Every Deployment, StatefulSet, and Job **must** have a matching NetworkPolicy or Conftest will deny the entire render.
 - `PolicyTypes` is inferred automatically: if you provide ingress flags, `Ingress` is included; egress flags → `Egress` is included.
 - After generating, run `validate-emerald-manifests` to confirm all four policy checks pass.
+

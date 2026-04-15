@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-pdb/scripts/generate.py --name "$NAME" --max-unavailable "$MAX_UNAVAILABLE" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type pdb --name "$NAME" --max-unavailable "$MAX_UNAVAILABLE" --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold PDB
@@ -30,3 +30,4 @@ Generate a PodDisruptionBudget Helm template using the `ag-template.pdb`
 
 - `--min-available` and `--max-unavailable` are mutually exclusive; script exits if both are provided.
 - The script prints a `values.yaml` snippet showing the required PDB configuration keys.
+

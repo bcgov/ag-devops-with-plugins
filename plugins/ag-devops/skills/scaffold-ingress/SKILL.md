@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-ingress/scripts/generate.py --name "$NAME" --host "$HOST" --service-port "$PORT" --avi-class "$AVI_CLASS" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type ingress --name "$NAME" --host "$HOST" --service-port "$PORT" --avi-class "$AVI_CLASS" --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold Ingress
@@ -29,3 +29,4 @@ Generate a Kubernetes Ingress Helm template using the `ag-template.ingress`
 ## Output
 
 `gitops/templates/<name>-ingress.yaml`
+

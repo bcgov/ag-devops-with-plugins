@@ -124,6 +124,8 @@ def main():
                         help="Primary workload name for CD rollout verification (default: web-api)")
     parser.add_argument("--target-dir", default=".",
                         help="Root directory of the target repository (default: .)")
+    parser.add_argument("--ag-devops-ref", default="v2.0.0",
+                        help="ag-devops git ref to use in CD pipeline (default: v2.0.0)")
     parser.add_argument("--overwrite", action="store_true",
                         help="Overwrite existing files (default: skip existing)")
     args = parser.parse_args()
@@ -144,28 +146,29 @@ def main():
         "@@SOLUTION_PATH@@":  args.solution_path,
         "@@TEST_FOLDERS@@":   args.test_folders,
         "@@MAIN_COMPONENT@@": args.main_component,
+        "@@AG_DEVOPS_REF@@":  getattr(args, "ag_devops_ref", "v2.0.0"),
     }
 
     print("\n=== Initializing Emerald repo structure ===\n")
 
     # .github/workflows/ci.yml
-    ci_content = render(load_template("ci.yml.j2"), base_replacements)
+    ci_content = render(load_template("ci.tpl.yml"), base_replacements)
     write_file(os.path.join(td, ".github", "workflows", "ci.yml"), ci_content, args.overwrite)
 
     # .github/workflows/cd.yml
-    cd_content = render(load_template("cd.yml.j2"), base_replacements)
+    cd_content = render(load_template("cd.tpl.yml"), base_replacements)
     write_file(os.path.join(td, ".github", "workflows", "cd.yml"), cd_content, args.overwrite)
 
     # .github/CODEOWNERS
-    co_content = render(load_template("CODEOWNERS.j2"), base_replacements)
+    co_content = render(load_template("CODEOWNERS.tpl"), base_replacements)
     write_file(os.path.join(td, ".github", "CODEOWNERS"), co_content, args.overwrite)
 
     # gitops/Chart.yaml
-    chart_content = render(load_template("Chart.yaml.j2"), base_replacements)
+    chart_content = render(load_template("Chart.tpl.yaml"), base_replacements)
     write_file(os.path.join(td, "gitops", "Chart.yaml"), chart_content, args.overwrite)
 
     # gitops/values.yaml
-    values_content = render(load_template("values.yaml.j2"), base_replacements)
+    values_content = render(load_template("values.tpl.yaml"), base_replacements)
     write_file(os.path.join(td, "gitops", "values.yaml"), values_content, args.overwrite)
 
     # gitops/values-dev.yaml / test / prod
@@ -177,19 +180,19 @@ def main():
             "@@REPLICAS@@":     ENV_REPLICAS[env],
             "@@ROUTE_ENABLED@@": ENV_ROUTE_ENABLED[env],
         }
-        env_content = render(load_template("values-env.yaml.j2"), env_replacements)
+        env_content = render(load_template("values-env.tpl.yaml"), env_replacements)
         write_file(os.path.join(td, "gitops", f"values-{env}.yaml"), env_content, args.overwrite)
 
     # Makefile
-    makefile_content = render(load_template("Makefile.j2"), base_replacements)
+    makefile_content = render(load_template("Makefile.tpl"), base_replacements)
     write_file(os.path.join(td, "Makefile"), makefile_content, args.overwrite)
 
     # .gitignore
-    gitignore_additions = load_template("gitignore-additions.j2")
+    gitignore_additions = load_template("gitignore-additions.tpl")
     append_gitignore(td, gitignore_additions)
 
     # AGENTS.md — helps AI agents understand the repo layout
-    agents_md = render(load_template("AGENTS.md.j2"), base_replacements)
+    agents_md = render(load_template("AGENTS.md.tpl"), base_replacements)
     write_file(os.path.join(td, "AGENTS.md"), agents_md, args.overwrite)
 
     print("\n=== Done! ===\n")
@@ -207,3 +210,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
