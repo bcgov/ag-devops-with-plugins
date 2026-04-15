@@ -1,4 +1,4 @@
-# ag-devops — Claude Code Plugin
+# ag-devops — Claude Code Plugin v2.0
 
 A Claude Code plugin for BC Government AG application teams deploying to OpenShift Emerald.
 
@@ -6,7 +6,7 @@ A Claude Code plugin for BC Government AG application teams deploying to OpenShi
 
 Converts the ag-devops shared library (CI templates, Helm library chart, policy configs) into interactive Claude Code skills, agents, and commands that guide developers through:
 
-- Scaffolding a new compliant Helm chart from scratch
+- Scaffolding a new compliant Helm chart from scratch (16 resource types)
 - Validating manifests against all four policy tools (Datree, Polaris, kube-linter, Conftest)
 - Authoring NetworkPolicies that pass Rego hard-deny rules
 - Wiring up .NET 8 CI pipelines
@@ -39,26 +39,47 @@ Answers 10 questions, then generates every file your repo needs — `.github/wor
 ```
 plugins/ag-devops/
   .claude-plugin/
-    plugin.json          # Plugin metadata
+    plugin.json          # Plugin metadata (v2.0.0 — 20 skills, 3 agents, 21 commands)
     marketplace.json     # Marketplace registration
+  scripts/
+    scaffold.py          # UNIFIED scaffold CLI — all 16 resource types via --type
+    validate.py          # 4-tool validation pipeline runner
+  assets/templates/      # 25 canonical .tpl.yaml/.tpl.yml templates (physical files)
   skills/
-    scaffold-openshift-deployment/SKILL.md
-    validate-emerald-manifests/SKILL.md
-    author-networkpolicy/SKILL.md
-    setup-dotnet-ci/SKILL.md
+    scaffold-deployment/     scaffold-service/      scaffold-route/
+    scaffold-statefulset/    scaffold-hpa/          scaffold-pdb/
+    scaffold-ingress/        scaffold-pvc/          scaffold-job/
+    scaffold-serviceaccount/ scaffold-networkpolicy/ scaffold-configmap/
+    scaffold-cronjob/        scaffold-externalsecret/ scaffold-docker-ci/
+    scaffold-sast-ci/        init-emerald-repo/     validate-emerald-manifests/
+    author-networkpolicy/    setup-dotnet-ci/
   agents/
-    initialize-emerald-repo.md   # Full repo init — .github + gitops + Makefile
-    manifest-validator.md
-    helm-scaffolder.md
+    init-emerald.md          # Full repo init — .github + gitops + Makefile
+    scaffold-emerald-app.md  # Topology-aware orchestrator
+    manifest-validator.md    # Policy validation orchestrator
   commands/
-    ag-init.md             # /ag-init — full repo initialization
-    ag-scaffold.md
-    ag-validate.md
-    ag-networkpolicy.md
-    ag-setup-ci.md
-  CLAUDE.md
-  package.json
+    ag-init.md ag-scaffold.md ag-validate.md ag-networkpolicy.md ag-setup-ci.md
+    ag-deployment.md ag-service.md ag-route.md ag-statefulset.md ag-hpa.md
+    ag-pdb.md ag-ingress.md ag-serviceaccount.md ag-pvc.md ag-job.md
+    ag-docker-ci.md ag-sast-ci.md ag-configmap.md ag-cronjob.md ag-externalsecret.md
+  symlinks.json            # 104 registered symlinks (scaffold.py + templates per skill)
+  AGENTS.md                # AI agent entry point
+  CLAUDE.md                # AI behavioural rules
 ```
+
+## v2.0 Architecture: Unified scaffold.py
+
+All 16 resource types go through one script at the plugin root:
+
+```bash
+python ./scripts/scaffold.py --type deployment --name web-api --port 8080
+python ./scripts/scaffold.py --type networkpolicy --name web-api --port 8080 --ingress-from-router
+python ./scripts/scaffold.py --type configmap --name my-config
+python ./scripts/scaffold.py --help   # full options list
+```
+
+Each skill's `scripts/scaffold.py` is a **symlink** to `plugins/ag-devops/scripts/scaffold.py`.
+After marketplace install, symlinks become hard copies — no broken paths in installed plugins.
 
 ## Source library
 
