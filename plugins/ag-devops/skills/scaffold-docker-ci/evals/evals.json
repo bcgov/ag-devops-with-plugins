@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Add Docker build and push workflow for my-api image",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Generate a StatefulSet for postgres",
+    "should_trigger": false
+  }
+]

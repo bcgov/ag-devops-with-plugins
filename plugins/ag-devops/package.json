@@ -1,0 +1,13 @@
+{
+  "name": "ag-devops",
+  "version": "1.1.0",
+  "description": "OpenShift Emerald deployment toolkit for AG application teams",
+  "license": "Apache-2.0",
+  "scripts": {
+    "scaffold-deployment": "python plugins/ag-devops/skills/scaffold-deployment/scripts/generate.py",
+    "scaffold-service": "python plugins/ag-devops/skills/scaffold-service/scripts/generate.py",
+    "scaffold-route": "python plugins/ag-devops/skills/scaffold-route/scripts/generate.py",
+    "scaffold-networkpolicy": "python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py",
+    "init-emerald-repo": "python plugins/ag-devops/skills/init-emerald-repo/scripts/init.py"
+  }
+}

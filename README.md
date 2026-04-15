@@ -1,65 +1,247 @@
 # AG Reusable DevOps Template and Library
 
-Shared CI/CD templates and policy-as-code for application teams.
+Shared CI/CD templates, policy-as-code, and an AI-assisted Claude Code plugin for BC Government AG application teams deploying to OpenShift Emerald.
 
-[![CI](https://img.shields.io/badge/CI-.NET%208-blue)](#ci)
-[![CD](https://img.shields.io/badge/CD-Helm%20%2B%20Policies-purple)](#cd)
-[![Helm](https://img.shields.io/badge/Helm-Library%20Chart-0F1689)](#cd)
-[![Policies](https://img.shields.io/badge/Policies-Datree%20%7C%20Polaris%20%7C%20kube--linter%20%7C%20OPA-orange)](#cd)
+[![CI](https://img.shields.io/badge/CI-.NET%208-blue)](#ci-templates)
+[![CD](https://img.shields.io/badge/CD-Helm%20%2B%20Policies-purple)](#cd--helm-library)
+[![Helm](https://img.shields.io/badge/Helm-Library%20Chart-0F1689)](#cd--helm-library)
+[![Policies](https://img.shields.io/badge/Policies-Datree%20%7C%20Polaris%20%7C%20kube--linter%20%7C%20OPA-orange)](#policy-checks)
+[![Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet)](#claude-code-plugin)
 
-## Quick links
-
-- Start here: [docs/CI-CD-START-HERE.md](docs/CI-CD-START-HERE.md)
-- Developer guide (deny-by-default cluster): [docs/DEVELOPERS-GUIDE.md](docs/DEVELOPERS-GUIDE.md)
-- CI documentation (full reference): [docs/CI.md](docs/CI.md)
-- CD documentation (full reference): [docs/CD.md](docs/CD.md)
+---
 
 ## What this repo is
 
-This repository is a **shared library** of:
+This repository is a **shared DevOps library** for application teams. It is not an application. It provides:
 
-- GitHub Actions templates for .NET 8 CI
-- A Helm **library chart** for consistent Kubernetes/OpenShift resources
-- Kubernetes manifest policy configurations (Datree, Polaris, kube-linter, Conftest/OPA)
-
-It is not an application. Your app repo consumes these assets.
-
-## Why this exists
-
-- Consistency: teams build/test/package/deploy the same way.
-- Security & compliance: manifests are validated against required policies before deployment.
-- Reuse: avoid copy/paste YAML drift across repositories.
-- Faster onboarding: new repos start with a known-good baseline.
-
-## Repository structure
-
-- [ci/dotnetcore/](ci/dotnetcore/) — reusable workflows + composite actions
-- [cd/shared-lib/ag-helm/](cd/shared-lib/ag-helm/) — Helm library chart (ag-helm-templates)
-- [cd/shared-lib/example-app/](cd/shared-lib/example-app/) — example consumer chart
-- [cd/policies/](cd/policies/) — policy configs and Rego rules
-
-## How to use
-
-- For CI: follow [docs/CI.md](docs/CI.md) (choose either “copy workflows” or “use composite actions”).
-- For CD: follow [docs/CD.md](docs/CD.md) (consume the Helm library + run the policy checks on rendered manifests).
+- **CI templates** — reusable GitHub Actions workflows and composite actions for .NET 8 (`ci/dotnetcore/`)
+- **Helm library chart** — `ag-helm-templates` published to GHCR OCI (`cd/shared-lib/ag-helm/`)
+- **Policy-as-code** — Datree, Polaris, kube-linter, and Conftest/OPA configs for Kubernetes manifests (`cd/policies/`)
+- **Claude Code plugin** — AI agents and scripted skills that scaffold entire repos in one command (`plugins/ag-devops/`)
 
 ---
 
-## CI
+## Claude Code Plugin
 
-> ✅ Use the CI templates when you want consistent .NET 8 build/test/pack steps across repos.
+The `ag-devops` plugin gives Claude Code the tools to scaffold a fully policy-compliant Emerald deployment without copy-paste. One agent conversation generates every file your repo needs.
 
-- Templates and actions live under [ci/dotnetcore/](ci/dotnetcore/).
-- Start with: [docs/CI.md](docs/CI.md).
+### What it does
+
+| Command | Agent | What happens |
+|---|---|---|
+| `/ag-init` | `init-emerald` | Asks 8 questions → runs `init.py` → writes `.github/workflows/`, `gitops/`, `Makefile`, `CODEOWNERS`, `AGENTS.md` |
+| `/ag-scaffold` | `scaffold-emerald-app` | Asks topology questions → calls scripted skills → writes one template file per resource into `gitops/templates/` |
+| `/ag-validate` | `manifest-validator` | Renders chart → runs all 4 policy tools → structured remediation |
+| `/ag-networkpolicy` | — | Generates a compliant NetworkPolicy via `scaffold-networkpolicy` script |
+| `/ag-deployment` | — | Scaffold a Deployment Helm fragment |
+| `/ag-service` | — | Scaffold a Service Helm fragment |
+| `/ag-route` | — | Scaffold an OpenShift Route Helm fragment |
+| `/ag-docker-ci` | — | Add Docker build/push GitHub Actions workflow |
+| `/ag-sast-ci` | — | Add SAST/CodeQL GitHub Actions workflow |
+| `/ag-setup-ci` | — | Configure .NET 8 CI pipeline |
+
+### Scripted Skills (Python — write files, no copy-paste)
+
+**Helm Chart Fragment Generators** — output goes to `gitops/templates/`
+
+| Skill | Command | Template |
+|---|---|---|
+| `scaffold-deployment` | `/ag-deployment` | `deployment.yaml.j2` |
+| `scaffold-service` | `/ag-service` | `service.yaml.j2` |
+| `scaffold-route` | `/ag-route` | `route.yaml.j2` |
+| `scaffold-statefulset` | `/ag-statefulset` | `statefulset.yaml.j2` |
+| `scaffold-hpa` | `/ag-hpa` | `hpa.yaml.j2` |
+| `scaffold-pdb` | `/ag-pdb` | `pdb.yaml.j2` |
+| `scaffold-ingress` | `/ag-ingress` | `ingress.yaml.j2` |
+| `scaffold-serviceaccount` | `/ag-serviceaccount` | `serviceaccount.yaml.j2` |
+| `scaffold-pvc` | `/ag-pvc` | `pvc.yaml.j2` |
+| `scaffold-job` | `/ag-job` | `job.yaml.j2` |
+| `scaffold-networkpolicy` | `/ag-networkpolicy` | (programmatic) |
+| `scaffold-openshift-deployment` | — | Deployment + SCC-safe |
+
+**CI/CD & Validation**
+
+| Skill | Command | What it generates |
+|---|---|---|
+| `init-emerald-repo` | `/ag-init` | Full repo boilerplate — `ci.yml`, `cd.yml`, `Chart.yaml`, `values*.yaml`, `Makefile`, `CODEOWNERS`, `AGENTS.md` |
+| `scaffold-docker-ci` | `/ag-docker-ci` | Docker build + push GitHub Actions workflow |
+| `scaffold-sast-ci` | `/ag-sast-ci` | SAST/CodeQL GitHub Actions workflow |
+| `setup-dotnet-ci` | `/ag-setup-ci` | .NET 8 CI pipeline wiring |
+| `validate-emerald-manifests` | `/ag-validate` | Runs datree + polaris + kube-linter + conftest/OPA |
+| `author-networkpolicy` | `/ag-networkpolicy` | Guided NetworkPolicy authoring |
+
+### Plugin structure
+
+```
+plugins/ag-devops/
+├── AGENTS.md              ← AI agent entry point — read this first
+├── README.md              ← human installation guide
+├── CLAUDE.md              ← AI behavioural rules for this plugin
+├── plugin.json            ← manifest: 18 skills, 5 agents, 17 commands
+├── symlinks.json          ← 80 registered symlinks (restore: symlink_manager.py restore)
+├── assets/
+│   ├── templates/         ← CANONICAL .yaml.j2 / .yml.j2 templates (21 files)
+│   └── policies/          ← symlinks → cd/policies/ (datree, polaris, OPA, kube-linter)
+├── references/            ← symlinks → docs/ and ag-helm/docs/
+├── skills/                ← 18 scripted skills (each has scripts/, assets/templates/, references/)
+├── agents/                ← 5 orchestration agents
+└── commands/              ← 17 slash commands
+```
+
+Templates are physical files at the plugin root (`assets/templates/`); each skill's `assets/templates/` contains file-level symlinks. This means the plugin is fully self-contained when installed via marketplace — no broken paths.
+
+#### Claude Code (via Plugin Marketplace)
+
+```bash
+/plugin marketplace add bcgov-c/ag-devops
+/plugin install ag-devops@ag-devops-marketplace
+```
+
+#### GitHub Copilot CLI
+
+```bash
+copilot plugin marketplace add bcgov-c/ag-devops
+copilot plugin install ag-devops@ag-devops-marketplace
+```
+
+#### Team Auto-Install (recommended)
+
+Add to your app repo's `.claude/settings.json` and commit — every collaborator gets the plugin automatically:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "ag-devops-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "bcgov-c/ag-devops"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "ag-devops@ag-devops-marketplace": true
+  }
+}
+```
+
+#### Pin to a release (production)
+
+```json
+{ "source": { "source": "github", "repo": "bcgov-c/ag-devops", "ref": "v1.1.0" } }
+```
+
+#### Verify Installation
+
+Start a new session and ask: *"Initialize my repo for Emerald"* or *"Scaffold a web-api deployment"*. The agent will automatically invoke the relevant skill.
 
 ---
 
-## CD
+## Repository Structure
 
-> ✅ Use the CD assets when you deploy via Helm and want enforced Kubernetes/OpenShift standards.
+```
+ag-devops/
+  ci/dotnetcore/             <- reusable .NET 8 GitHub Actions workflows + composite actions
+  cd/shared-lib/ag-helm/     <- Helm library chart (ag-helm-templates)
+  cd/shared-lib/example-app/ <- example consumer chart
+  cd/policies/               <- Datree, Polaris, kube-linter, Conftest/OPA configs
+  plugins/ag-devops/         <- Claude Code plugin (agents, skills, commands)
+  docs/                      <- full CI and CD reference documentation
+```
 
-- Helm library chart: [cd/shared-lib/ag-helm/](cd/shared-lib/ag-helm/)
-- Example consumer: [cd/shared-lib/example-app/](cd/shared-lib/example-app/)
-- Policy configs: [cd/policies/](cd/policies/)
-- Start with: [docs/CD.md](docs/CD.md).
+---
 
+## CI Templates
+
+> Use these when you want consistent .NET 8 build/test/pack steps across repos.
+
+Templates and composite actions live in [`ci/dotnetcore/`](ci/dotnetcore/). Full reference: [`docs/CI.md`](docs/CI.md).
+
+**Minimum entry workflow** in your app repo:
+
+```yaml
+jobs:
+  restore:
+    uses: ./.github/workflows/dotnet-8-dependencies.yml
+    with: { dotnet_build_path: ./MySolution.sln }
+  build:
+    needs: restore
+    uses: ./.github/workflows/dotnet-8-build.yml
+    with: { dotnet_build_path: ./MySolution.sln, warn_as_error: true }
+  test:
+    needs: build
+    uses: ./.github/workflows/dotnet-8-tests-msbuild.yml
+    with: { unit_test_folder: "tests/MyApp.Tests", coverage_threshold: 80 }
+```
+
+---
+
+## CD + Helm Library
+
+> Use these when you deploy via Helm and want enforced Kubernetes/OpenShift standards.
+
+- Helm library chart: [`cd/shared-lib/ag-helm/`](cd/shared-lib/ag-helm/)
+- Example consumer: [`cd/shared-lib/example-app/`](cd/shared-lib/example-app/)
+- API contract: [`cd/shared-lib/ag-helm/docs/SIMPLE-API.md`](cd/shared-lib/ag-helm/docs/SIMPLE-API.md)
+- Full reference: [`docs/CD.md`](docs/CD.md)
+
+**Every resource uses the "set + define + include" pattern:**
+
+```yaml
+{{- $p := dict "Values" .Values -}}
+{{- $_ := set $p "Name" "web-api" -}}
+{{- $_ := set $p "ModuleValues" .Values.webApi -}}
+{{- $_ := set $p "Ports" "webapi.ports" -}}
+{{ include "ag-template.deployment" $p }}
+```
+
+---
+
+## Policy Checks
+
+All four tools run against **rendered YAML** (not chart source). The CD pipeline enforces them before every deploy.
+
+```bash
+helm template my-release ./gitops > rendered.yaml
+datree test rendered.yaml --policy-config cd/policies/datree-policies.yaml
+polaris audit --config cd/policies/polaris.yaml --format pretty rendered.yaml
+kube-linter lint rendered.yaml --config cd/policies/kube-linter.yaml
+conftest test rendered.yaml --policy cd/policies --all-namespaces --fail-on-warn
+```
+
+| Concern | Datree | Polaris | kube-linter | Conftest/OPA |
+|---|:---:|:---:|:---:|:---:|
+| DataClass label | ✅ | ✅ | ❌ | ✅ |
+| Owner/environment labels | ✅ | ❌ | ✅ | ❌ |
+| Image tags / floating tag | ✅ | ✅ | ✅ | ❌ |
+| Privileged / host namespaces | ✅ | ✅ | ✅ | ❌ |
+| Resource requests/limits | ✅ | ✅ | ❌ | ❌ |
+| Probes | ✅ | ✅ | ❌ | ❌ |
+| NetworkPolicy exists | ✅ | ✅ | ❌ | ✅ |
+| NetworkPolicy not allow-all | ✅ | partial | ❌ | ✅ |
+| Route AVI annotation | ✅ | ✅ | ❌ | ✅ |
+| Route edge termination approval | ❌ | ❌ | ❌ | ✅ |
+
+---
+
+## Releases
+
+Releases are automated via **Semantic Release** on pushes to `main`. Use [Conventional Commits](https://www.conventionalcommits.org/):
+
+| Prefix | Release |
+|---|---|
+| `fix:` | patch |
+| `feat:` | minor |
+| `feat!:` / `BREAKING CHANGE:` | major |
+
+On a new tag, `release.yml` packages and pushes the Helm chart to GHCR OCI automatically.
+
+---
+
+## Quick Links
+
+- Start here (CI/CD): [docs/CI-CD-START-HERE.md](docs/CI-CD-START-HERE.md)
+- Developer guide: [docs/DEVELOPERS-GUIDE.md](docs/DEVELOPERS-GUIDE.md)
+- CI reference: [docs/CI.md](docs/CI.md)
+- CD reference: [docs/CD.md](docs/CD.md)
+- Helm API contract: [cd/shared-lib/ag-helm/docs/SIMPLE-API.md](cd/shared-lib/ag-helm/docs/SIMPLE-API.md)
+- Publishing the chart: [cd/shared-lib/ag-helm/PUBLISHING.md](cd/shared-lib/ag-helm/PUBLISHING.md)

@@ -1,0 +1,15 @@
+{{/*
+  Reference template — standard 3-tier pattern.
+  The generate.py script builds this dynamically from CLI flags.
+  Markers: @@NAME@@, @@PORT@@, @@POLICY_TYPES@@,
+           @@ANNOTATIONS_SECTION@@, @@INGRESS_SECTION@@, @@EGRESS_SECTION@@
+*/}}
+{{- $np := dict "Values" .Values -}}
+{{- $_ := set $np "ApplicationGroup" .Values.project -}}
+{{- $_ := set $np "Name" "@@NAME@@" -}}
+{{- $_ := set $np "Namespace" $.Release.Namespace -}}
+{{- $_ := set $np "PolicyTypes" (list @@POLICY_TYPES@@) -}}
+@@ANNOTATIONS_SECTION@@
+@@INGRESS_SECTION@@
+@@EGRESS_SECTION@@
+{{ include "ag-template.networkpolicy" $np }}

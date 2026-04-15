@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Add autoscaling to web-api with min 2 max 10 replicas",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Generate a NetworkPolicy for web-api",
+    "should_trigger": false
+  }
+]

@@ -1,0 +1,8 @@
+{{- $p := dict "Values" .Values -}}
+{{- $_ := set $p "ApplicationGroup" .Values.project -}}
+{{- $_ := set $p "Name" "@@NAME@@" -}}
+{{- $_ := set $p "Size" "@@SIZE@@" -}}
+{{- $_ := set $p "StorageClassName" "@@STORAGE_CLASS@@" -}}
+{{- $_ := set $p "AccessModes" (list "@@ACCESS_MODE@@") -}}
+{{- $_ := set $p "ModuleValues" .Values.@@VALUES_KEY@@ -}}
+{{ include "ag-template.pvc" $p }}

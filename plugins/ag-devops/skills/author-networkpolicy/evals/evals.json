@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Write a NetworkPolicy for web-api that allows ingress from the router",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Generate a Deployment for my app",
+    "should_trigger": false
+  }
+]

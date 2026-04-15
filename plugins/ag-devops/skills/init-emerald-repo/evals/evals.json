@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Initialize a new application repository for Emerald deployment with all boilerplate files",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Add a NetworkPolicy for my existing deployment",
+    "should_trigger": false
+  }
+]

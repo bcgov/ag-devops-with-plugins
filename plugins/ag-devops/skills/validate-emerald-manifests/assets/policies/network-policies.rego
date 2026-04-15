@@ -1,0 +1,1 @@
+../../../../assets/policies/network-policies.rego

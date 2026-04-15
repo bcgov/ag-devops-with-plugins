@@ -1,0 +1,9 @@
+{{- $p := dict "Values" .Values -}}
+{{- $_ := set $p "ApplicationGroup" .Values.project -}}
+{{- $_ := set $p "Name" "@@NAME@@" -}}
+{{- $_ := set $p "ModuleValues" .Values.@@VALUES_KEY@@ -}}
+{{- $_ := set $p "ServiceName" (printf "%s-%s" .Values.project "@@NAME@@") -}}
+{{- $_ := set $p "ServicePort" @@SERVICE_PORT@@ -}}
+{{- $_ := set $p "Annotations" (dict "aviinfrasetting.ako.vmware.com/name" "@@AVI_CLASS@@") -}}
+{{- $_ := set $p "Hosts" (list (dict "host" "@@HOST@@" "paths" (list (dict "path" "@@PATH@@" "pathType" "Prefix")))) -}}
+{{ include "ag-template.ingress" $p }}

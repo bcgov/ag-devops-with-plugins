@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Create a new Helm chart for my .NET API on OpenShift Emerald from scratch",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Run the policy checks on my chart",
+    "should_trigger": false
+  }
+]

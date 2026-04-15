@@ -1,0 +1,57 @@
+sequenceDiagram
+    autonumber
+
+    actor Dev as Developer
+    participant AppRepo as App Repository (GitHub)
+    participant CI as GitHub Actions CI Runner
+    participant GHCR as GHCR OCI Registry
+    participant NuGet as GitHub Packages NuGet Feed
+    participant GitOps as GitHub Actions CD Runner
+    participant PolicyTools as Policy Tools
+    participant OCP as OpenShift Cluster
+
+    rect rgb(220, 235, 255)
+        Note over Dev,GHCR: CI — Build, Test, Package
+        Dev->>AppRepo: git push (PR or merge to main)
+        AppRepo->>CI: Trigger CI workflow
+        CI->>CI: dotnet restore (dotnet-8-dependencies.yml)
+        CI->>CI: dotnet build --configuration Release (dotnet-8-build.yml)
+        CI->>CI: dotnet test + coverage enforcement (dotnet-8-tests-msbuild.yml)
+        CI->>CI: dotnet format --verify-no-changes (dotnet-8-lint.yml)
+        CI->>GHCR: Push container image (tagged or digest-pinned)
+        CI-->>AppRepo: Upload test-results artifact (7 days)
+        opt NuGet library
+            CI->>CI: dotnet pack to .nupkg (dotnet-8-nuget-pack.yml)
+            CI->>NuGet: dotnet nuget push (dotnet-8-nuget-deploy.yml)
+        end
+    end
+
+    rect rgb(220, 255, 230)
+        Note over Dev,OCP: CD — Render, Validate, Deploy
+        Dev->>AppRepo: Merge to main / create release tag
+        AppRepo->>GitOps: Trigger CD workflow
+        GitOps->>GHCR: helm registry login
+        GitOps->>GHCR: helm dependency update — pulls ag-helm-templates OCI chart
+        GHCR-->>GitOps: ag-helm-templates.tgz
+        GitOps->>GitOps: helm template my-release ./my-chart — renders to rendered.yaml
+        GitOps->>PolicyTools: datree test rendered.yaml (DataClass, AVI annotation, probes, resources)
+        PolicyTools-->>GitOps: pass / fail
+        GitOps->>PolicyTools: polaris audit rendered.yaml (securityContext, NetworkPolicy, replicas)
+        PolicyTools-->>GitOps: pass / fail
+        GitOps->>PolicyTools: kube-linter lint rendered.yaml (selectors, RBAC, image tags)
+        PolicyTools-->>GitOps: pass / fail
+        GitOps->>PolicyTools: conftest test rendered.yaml (OPA Rego — allow-all NP, edge termination, internet egress)
+        PolicyTools-->>GitOps: pass / fail
+        GitOps->>OCP: helm upgrade --install my-release ./my-chart
+        OCP-->>GitOps: release deployed
+    end
+
+    rect rgb(255, 245, 220)
+        Note over OCP: Runtime — OpenShift cluster
+        OCP->>OCP: Apply Deployment / StatefulSet / Job
+        OCP->>OCP: Apply Service (ClusterIP only — enforced by policy)
+        OCP->>OCP: Apply OpenShift Route + AVI infrasetting annotation
+        OCP->>OCP: Apply NetworkPolicy (deny-by-default, only explicit allows pass)
+        OCP->>OCP: Apply HPA / PDB / PriorityClass
+        OCP-->>Dev: Application reachable at Route host
+    end
