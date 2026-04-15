@@ -265,8 +265,32 @@ deny[msg] {
 
     msg := sprintf("NetworkPolicy '%s' contains internet-wide egress to %s without required annotations %q and %q", [policy_name, cidr, internet_egress_justification_key, internet_egress_approved_by_key])
 }
+
+# Deny cross-namespace ingress without explicit namespaceSelector.
+# Ingress peers that use only podSelector (no namespaceSelector) implicitly match
+# pods in ALL namespaces, which violates namespace isolation.
+deny[msg] {
+    input.kind == "NetworkPolicy"
+    policy_name := input.metadata.name
+    not is_default_deny_policy(input)
 
-# Helper functions
+    some i
+    rule := object.get(input.spec, "ingress", [])[i]
+    peers := object.get(rule, "from", [])
+    some j
+    peer := peers[j]
+
+    # Peer has a podSelector but no namespaceSelector → implicit all-namespace match
+    object.get(peer, "podSelector", null) != null
+    object.get(peer, "namespaceSelector", null) == null
+
+    msg := sprintf(
+        "NetworkPolicy '%s' ingress rule #%d peer #%d uses podSelector without namespaceSelector — matches pods in ALL namespaces (add namespaceSelector to scope to local namespace)",
+        [policy_name, i+1, j+1]
+    )
+}
+
+
 has_dataclass_label(deployment) {
     deployment.spec.template.metadata.labels.DataClass
 }

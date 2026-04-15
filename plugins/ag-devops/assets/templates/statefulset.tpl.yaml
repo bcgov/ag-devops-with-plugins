@@ -1,0 +1,25 @@
+{{- $p := dict "Values" .Values -}}
+{{- $_ := set $p "ApplicationGroup" .Values.project -}}
+{{- $_ := set $p "Name" "@@NAME@@" -}}
+{{- $_ := set $p "ServiceName" "@@SERVICE_NAME@@" -}}
+{{- $_ := set $p "ModuleValues" .Values.@@VALUES_KEY@@ -}}
+{{- $_ := set $p "Ports" "@@VALUES_KEY@@.ports" -}}
+{{- $_ := set $p "Probes" "@@NAME@@.probes" -}}
+{{ include "ag-template.statefulset" $p }}
+
+{{- define "@@VALUES_KEY@@.ports" -}}
+- name: http
+  containerPort: @@PORT@@
+  protocol: TCP
+{{- end }}
+
+{{- define "@@NAME@@.probes" -}}
+livenessProbe:
+  httpGet: { path: @@PROBE_LIVE_PATH@@, port: http }
+  initialDelaySeconds: 10
+  periodSeconds: 30
+readinessProbe:
+  httpGet: { path: @@PROBE_READY_PATH@@, port: http }
+  initialDelaySeconds: 5
+  periodSeconds: 10
+{{- end }}

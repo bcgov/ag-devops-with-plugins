@@ -1,1 +1,1 @@
-../../../../assets/policies/routes-edge-termination.rego
+C:/Users/RICHFREM/source/repos/ag-devops/plugins/ag-devops/assets/policies/routes-edge-termination.rego

@@ -1,1 +1,1 @@
-../../../references/CI.md
+C:/Users/RICHFREM/source/repos/ag-devops/plugins/ag-devops/references/CI.md

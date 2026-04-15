@@ -1,1 +1,1 @@
-../../../cd/shared-lib/ag-helm/docs/EXAMPLES.md
+C:/Users/RICHFREM/source/repos/ag-devops/cd/shared-lib/ag-helm/docs/EXAMPLES.md

@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-deployment/scripts/generate.py --name "$NAME" --port "$PORT" --data-class "$DATA_CLASS" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type deployment --name "$NAME" --port "$PORT" --data-class "$DATA_CLASS" --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold Deployment
@@ -25,7 +25,7 @@ Generate a policy-compliant Deployment Helm template using the `ag-template.depl
 ## Usage
 
 ```bash
-python plugins/ag-devops/skills/scaffold-deployment/scripts/generate.py \
+python ./scripts/scaffold.py --type deployment \
   --name web-api \
   --port 8080 \
   --data-class low \
@@ -64,19 +64,19 @@ webApi:
 
 **Agent call — generate web-api deployment:**
 ```
-python plugins/ag-devops/skills/scaffold-deployment/scripts/generate.py \
+python ./scripts/scaffold.py --type deployment \
   --name web-api --port 8080 --data-class low --output-dir gitops/templates
 ```
 
 **Agent call — generate frontend deployment:**
 ```
-python plugins/ag-devops/skills/scaffold-deployment/scripts/generate.py \
+python ./scripts/scaffold.py --type deployment \
   --name frontend --port 8080 --data-class low --output-dir gitops/templates
 ```
 
 **Agent call — generate worker (no HTTP port, use internal port 8081):**
 ```
-python plugins/ag-devops/skills/scaffold-deployment/scripts/generate.py \
+python ./scripts/scaffold.py --type deployment \
   --name worker --port 8081 --data-class low --output-dir gitops/templates
 ```
 
@@ -85,3 +85,4 @@ python plugins/ag-devops/skills/scaffold-deployment/scripts/generate.py \
 - Always pair with `scaffold-networkpolicy` — every Deployment must have a matching NetworkPolicy or Conftest will fail.
 - Always pair with `scaffold-service` if the component receives traffic.
 - The generated probes use `/health/live` and `/health/ready` — update the paths if your app uses different health endpoints.
+

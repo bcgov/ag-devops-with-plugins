@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-statefulset/scripts/generate.py --name "$NAME" --port "$PORT" --data-class "$DATA_CLASS" --service-name "$SERVICE_NAME" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type statefulset --name "$NAME" --port "$PORT" --data-class "$DATA_CLASS" --service-name "$SERVICE_NAME" --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold StatefulSet
@@ -26,7 +26,7 @@ Generate a policy-compliant StatefulSet Helm template using the `ag-template.sta
 ## Usage
 
 ```bash
-python plugins/ag-devops/skills/scaffold-statefulset/scripts/generate.py \
+python ./scripts/scaffold.py --type statefulset \
   --name redis \
   --port 6379 \
   --data-class low \
@@ -42,3 +42,4 @@ python plugins/ag-devops/skills/scaffold-statefulset/scripts/generate.py \
 - Always pair with `scaffold-networkpolicy` — every StatefulSet must have a matching NetworkPolicy.
 - Always pair with `scaffold-service` if the component receives traffic.
 - The `ServiceName` must match a headless Service in the same chart.
+

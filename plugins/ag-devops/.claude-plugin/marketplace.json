@@ -9,7 +9,7 @@
     {
       "name": "ag-devops",
       "description": "OpenShift Emerald deployment toolkit for AG application teams: scaffold Helm charts, validate manifests against policy, author compliant NetworkPolicies, and wire up .NET 8 CI pipelines",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "source": "./",
       "author": {
         "name": "BC Government - Attorney General",

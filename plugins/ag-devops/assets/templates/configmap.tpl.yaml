@@ -1,0 +1,16 @@
+{{- $p := dict "Values" .Values -}}
+{{- $_ := set $p "ApplicationGroup" .Values.project -}}
+{{- $_ := set $p "Name" "@@NAME@@" -}}
+{{- $_ := set $p "Namespace" $.Release.Namespace -}}
+{{- $_ := set $p "ModuleValues" .Values.@@VALUES_KEY@@ -}}
+{{/*
+  ConfigMap data is driven by values. Add to your values.yaml:
+  @@VALUES_KEY@@:
+    configMap:
+      KEY: value
+      ANOTHER_KEY: another-value
+*/}}
+{{- $cm := dict "apiVersion" "v1" "kind" "ConfigMap" -}}
+{{- $_ := set $cm "metadata" (dict "name" (printf "%s-%s" .Values.project "@@NAME@@") "namespace" $.Release.Namespace) -}}
+{{- $_ := set $cm "data" (.Values.@@VALUES_KEY@@.configMap | default dict) -}}
+{{ toYaml $cm }}

@@ -1,1 +1,1 @@
-../../../docs/DEVELOPERS-GUIDE copy.md
+C:/Users/RICHFREM/source/repos/ag-devops/docs/DEVELOPERS-GUIDE copy.md

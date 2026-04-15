@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-route/scripts/generate.py --name "$NAME" --port "$PORT" --data-class "$DATA_CLASS" --host "$HOST" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type route --name "$NAME" --host "$HOST" --data-class "$DATA_CLASS" --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold OpenShift Route
@@ -27,7 +27,7 @@ is written directly to `gitops/templates/`. The script also prints the required
 ## Usage
 
 ```bash
-python plugins/ag-devops/skills/scaffold-route/scripts/generate.py \
+python ./scripts/scaffold.py --type route \
   --name web-api \
   --port 8080 \
   --data-class low \
@@ -59,14 +59,14 @@ webApi:
 
 **Agent call — expose web-api via Route:**
 ```
-python plugins/ag-devops/skills/scaffold-route/scripts/generate.py \
+python ./scripts/scaffold.py --type route \
   --name web-api --port 8080 --data-class low \
   --host myapp-dev.apps.emerald.devops.gov.bc.ca --output-dir gitops/templates
 ```
 
 **Agent call — expose frontend via Route:**
 ```
-python plugins/ag-devops/skills/scaffold-route/scripts/generate.py \
+python ./scripts/scaffold.py --type route \
   --name frontend --port 8080 --data-class low \
   --host myapp-dev.apps.emerald.devops.gov.bc.ca --output-dir gitops/templates
 ```
@@ -76,3 +76,4 @@ python plugins/ag-devops/skills/scaffold-route/scripts/generate.py \
 - Route host and AVI annotation live in `values.yaml`; use separate `values-dev.yaml` / `values-prod.yaml` overrides for per-environment hostnames.
 - If using `reencrypt` or `passthrough` termination, update the generated template's route settings accordingly.
 - Components with a Route **must** also have a NetworkPolicy that allows ingress from `openshift-ingress` router pods — use `scaffold-networkpolicy --ingress-from-router`.
+

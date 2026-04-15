@@ -1,1 +1,1 @@
-../../../../assets/policies/avi-infrasetting-annotation.rego
+C:/Users/RICHFREM/source/repos/ag-devops/plugins/ag-devops/assets/policies/avi-infrasetting-annotation.rego

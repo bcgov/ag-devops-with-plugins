@@ -1,0 +1,7 @@
+{
+  "evals": [
+    { "prompt": "Generate a configmap template for a component called my-app", "expected_contains": ["my-app"] },
+    { "prompt": "Scaffold a configmap for the worker component", "expected_contains": ["worker"] },
+    { "prompt": "Create configmap template with name data-processor", "expected_contains": ["data-processor"] }
+  ]
+}

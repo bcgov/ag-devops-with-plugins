@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-job/scripts/generate.py --name "$NAME" --data-class "$DATA_CLASS" --backoff-limit "$BACKOFF" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type job --name "$NAME" --data-class "$DATA_CLASS" --backoff-limit "$BACKOFF" --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold Job
@@ -31,3 +31,4 @@ Generate a Kubernetes Job Helm template using the `ag-template.job`
 
 - Jobs are one-shot; always pair with a NetworkPolicy if the job calls external services.
 - Use `--ttl 0` to delete immediately after completion.
+

@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python plugins/ag-devops/skills/scaffold-sast-ci/scripts/generate.py --project-key "$PROJECT_KEY" --sonar-host "$SONAR_HOST" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type sast-ci --project-key "$PROJECT_KEY" --sonar-host "$SONAR_HOST" --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold SAST CI
@@ -31,3 +31,4 @@ and Gitleaks secrets scanning using the `bcgov-c/ag-devops` shared composite act
 
 - Requires `SONAR_TOKEN`, `GITHUB_TOKEN`, and `GITLEAKS_LICENSE` secrets.
 - Runs on push to main and on all pull requests.
+

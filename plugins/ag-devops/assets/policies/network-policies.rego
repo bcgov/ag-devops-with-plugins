@@ -1,1 +1,1 @@
-../../../../cd/policies/network-policies.rego
+C:/Users/RICHFREM/source/repos/ag-devops/cd/policies/network-policies.rego

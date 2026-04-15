@@ -1,0 +1,14 @@
+{{- $p := dict "Values" .Values -}}
+{{- $_ := set $p "ApplicationGroup" .Values.project -}}
+{{- $_ := set $p "Name" "@@NAME@@" -}}
+{{- $_ := set $p "Namespace" $.Release.Namespace -}}
+{{- $_ := set $p "ModuleValues" .Values.@@VALUES_KEY@@ -}}
+{{- $_ := set $p "Schedule" "@@SCHEDULE@@" -}}
+{{ include "ag-template.job" $p }}
+{{/*
+  CronJob schedule and job spec are driven by values. Add to your values.yaml:
+  @@VALUES_KEY@@:
+    dataClass: low
+    schedule: "@@SCHEDULE@@"
+    image: <registry>/<project>/@@NAME@@:latest
+*/}}
