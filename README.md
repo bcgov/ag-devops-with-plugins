@@ -27,22 +27,48 @@ The `ag-devops` plugin gives Claude Code the tools to scaffold a fully policy-co
 
 ### What it does
 
-| Command / Agent | What happens |
-|---|---|
-| `/ag-init` → `init-emerald` agent | Asks 8 questions → runs `init.py` → writes `.github/workflows/`, `gitops/`, `Makefile`, `CODEOWNERS`, `.gitignore` |
-| `/ag-scaffold` → `scaffold-emerald-app` agent | Asks topology questions → calls scripted skills → writes one template file per resource directly into `gitops/templates/` |
-| `/ag-validate` → `manifest-validator` agent | Renders the chart → runs all 4 policy tools → returns structured remediation |
-| `/ag-networkpolicy` | Generates a compliant NetworkPolicy via `scaffold-networkpolicy` script |
+| Command | Agent | What happens |
+|---|---|---|
+| `/ag-init` | `init-emerald` | Asks 8 questions → runs `init.py` → writes `.github/workflows/`, `gitops/`, `Makefile`, `CODEOWNERS`, `AGENTS.md` |
+| `/ag-scaffold` | `scaffold-emerald-app` | Asks topology questions → calls scripted skills → writes one template file per resource into `gitops/templates/` |
+| `/ag-validate` | `manifest-validator` | Renders chart → runs all 4 policy tools → structured remediation |
+| `/ag-networkpolicy` | — | Generates a compliant NetworkPolicy via `scaffold-networkpolicy` script |
+| `/ag-deployment` | — | Scaffold a Deployment Helm fragment |
+| `/ag-service` | — | Scaffold a Service Helm fragment |
+| `/ag-route` | — | Scaffold an OpenShift Route Helm fragment |
+| `/ag-docker-ci` | — | Add Docker build/push GitHub Actions workflow |
+| `/ag-sast-ci` | — | Add SAST/CodeQL GitHub Actions workflow |
+| `/ag-setup-ci` | — | Configure .NET 8 CI pipeline |
 
 ### Scripted Skills (Python — write files, no copy-paste)
 
-| Skill | Script | Output |
+**Helm Chart Fragment Generators** — output goes to `gitops/templates/`
+
+| Skill | Command | Template |
 |---|---|---|
-| `scaffold-deployment` | `scripts/generate.py --name web-api --port 8080` | `gitops/templates/web-api-deployment.yaml` |
-| `scaffold-service` | `scripts/generate.py --name web-api --port 8080` | `gitops/templates/web-api-service.yaml` |
-| `scaffold-route` | `scripts/generate.py --name web-api --data-class low` | `gitops/templates/web-api-route.yaml` |
-| `scaffold-networkpolicy` | `scripts/generate.py --name web-api --ingress-from-router` | `gitops/templates/web-api-networkpolicy.yaml` |
-| `init-emerald-repo` | `scripts/init.py --project my-app --registry ghcr.io/bcgov-c` | Full repo boilerplate (10 files) |
+| `scaffold-deployment` | `/ag-deployment` | `deployment.yaml.j2` |
+| `scaffold-service` | `/ag-service` | `service.yaml.j2` |
+| `scaffold-route` | `/ag-route` | `route.yaml.j2` |
+| `scaffold-statefulset` | `/ag-statefulset` | `statefulset.yaml.j2` |
+| `scaffold-hpa` | `/ag-hpa` | `hpa.yaml.j2` |
+| `scaffold-pdb` | `/ag-pdb` | `pdb.yaml.j2` |
+| `scaffold-ingress` | `/ag-ingress` | `ingress.yaml.j2` |
+| `scaffold-serviceaccount` | `/ag-serviceaccount` | `serviceaccount.yaml.j2` |
+| `scaffold-pvc` | `/ag-pvc` | `pvc.yaml.j2` |
+| `scaffold-job` | `/ag-job` | `job.yaml.j2` |
+| `scaffold-networkpolicy` | `/ag-networkpolicy` | (programmatic) |
+| `scaffold-openshift-deployment` | — | Deployment + SCC-safe |
+
+**CI/CD & Validation**
+
+| Skill | Command | What it generates |
+|---|---|---|
+| `init-emerald-repo` | `/ag-init` | Full repo boilerplate — `ci.yml`, `cd.yml`, `Chart.yaml`, `values*.yaml`, `Makefile`, `CODEOWNERS`, `AGENTS.md` |
+| `scaffold-docker-ci` | `/ag-docker-ci` | Docker build + push GitHub Actions workflow |
+| `scaffold-sast-ci` | `/ag-sast-ci` | SAST/CodeQL GitHub Actions workflow |
+| `setup-dotnet-ci` | `/ag-setup-ci` | .NET 8 CI pipeline wiring |
+| `validate-emerald-manifests` | `/ag-validate` | Runs datree + polaris + kube-linter + conftest/OPA |
+| `author-networkpolicy` | `/ag-networkpolicy` | Guided NetworkPolicy authoring |
 
 ### Installation
 
