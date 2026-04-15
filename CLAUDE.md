@@ -45,6 +45,19 @@ kube-linter lint rendered.yaml --config cd/policies/kube-linter.yaml
 conftest test rendered.yaml --policy cd/policies --all-namespaces --fail-on-warn
 ```
 
+Or use the plugin's validate.py for the same pipeline:
+```bash
+python plugins/ag-devops/scripts/validate.py --chart ./my-chart --release my-release
+```
+
+## Running plugin tests
+
+```bash
+cd tests
+pytest test_scaffold.py -v          # 26 tests covering all 16 scaffold types
+pytest test_scaffold.py --update-fixtures  # regenerate golden fixtures
+```
+
 ## Releases
 
 Releases are automated via **Semantic Release** (`.releaserc.json`) triggered on pushes to `main`. Use [Conventional Commits](https://www.conventionalcommits.org/):
@@ -87,8 +100,6 @@ Networking: `service`, `route.openshift`, `ingress`, `networkpolicy`
 Reliability: `hpa`, `pdb`, `pvc`, `priorityclass`
 Identity: `serviceaccount`
 
-ConfigMap, Secret, and CronJob templates are intentionally **not** provided.
-
 ### Fragment output shapes (common source of bugs)
 
 - **List item** (emit `- ...`): `Ports`, `Env`, `ServicePorts`, `VolumeMounts`, `Volumes`, `InitContainers`, `IngressTemplate`, `EgressTemplate`
@@ -112,6 +123,7 @@ The Rego policy **hard denies** any of these patterns:
 - Ingress rules missing `from` or missing `ports`
 - Egress rules missing `to` or missing `ports`
 - Empty peer selectors inside `from/to` (e.g. `podSelector: {}`)
+- `podSelector` without `namespaceSelector` in an ingress peer (namespace isolation violation)
 - Internet egress (`0.0.0.0/0`) without both `justification` and `approvedBy` annotations
 
 Prefer `AllowIngressFrom` / `AllowEgressTo` intent inputs on `ag-template.networkpolicy` over raw rules — they are designed to avoid accidental allow-all shapes.
@@ -128,93 +140,63 @@ Prefer `AllowIngressFrom` / `AllowEgressTo` intent inputs on `ag-template.networ
 | Probes | ✅ | ✅ | ❌ | ❌ |
 | NetworkPolicy exists | ✅ | ✅ | ❌ | ✅ |
 | NetworkPolicy not allow-all | ✅ | partial | ❌ | ✅ |
+| NetworkPolicy namespace isolation | ❌ | ❌ | ❌ | ✅ |
 | Route AVI annotation | ✅ | ✅ | ❌ | ✅ |
 | Route edge termination approval | ❌ | ❌ | ❌ | ✅ |
 
 
-## Claude Code Plugin (`plugins/ag-devops/`)
+## Claude Code Plugin (`plugins/ag-devops/`) — v2.0
 
-This repo ships a Claude Code plugin that agents and teams can install via the marketplace. It provides scripted skills (Python scripts that write files directly) and orchestrating agents.
+This repo ships a Claude Code plugin that agents and teams can install via the marketplace.
 
 ### Plugin structure
 
 ```
 plugins/ag-devops/
 ├── AGENTS.md              ← AI agent entry point — read this first
-├── plugin.json            ← manifest: 18 skills, 5 agents, 17 commands
-├── symlinks.json          ← 80 registered symlinks (restore: symlink_manager.py restore)
+├── .claude-plugin/
+│   ├── plugin.json        ← manifest: 20 skills, 3 agents, 21 commands (v2.0.0)
+│   └── marketplace.json   ← marketplace registration
+├── scripts/
+│   ├── scaffold.py        ← UNIFIED scaffold CLI — all 16 resource types via --type
+│   └── validate.py        ← 4-tool validation pipeline (helm → datree → polaris → kube-linter → conftest)
 ├── assets/
-│   ├── templates/         ← CANONICAL .yaml.j2 / .yml.j2 templates (21 files, physical)
+│   ├── templates/         ← 25 canonical .tpl.yaml / .tpl.yml templates (physical)
 │   └── policies/          ← symlinks → cd/policies/
 ├── references/            ← symlinks → docs/ and ag-helm/docs/
-├── skills/                ← 18 scripted skills
-├── agents/                ← 5 orchestration agents
-└── commands/              ← 17 slash commands (/ag-*)
+├── skills/                ← 20 scripted skills
+├── agents/                ← 3 orchestration agents
+└── commands/              ← 21 slash commands (/ag-*)
 ```
 
-Each skill's `assets/templates/` and `references/` contain file-level symlinks → plugin root (ADR-003). Scripts stay physically in each skill's `scripts/` (ADR-002 single-skill rule).
+### v2.0 scaffold.py — unified CLI
 
-### Installation
+All Helm fragment generation goes through one script:
 
 ```bash
-# Claude Code
-/plugin marketplace add bcgov-c/ag-devops
-/plugin install ag-devops@ag-devops-marketplace
-
-# GitHub Copilot CLI
-copilot plugin marketplace add bcgov-c/ag-devops
-copilot plugin install ag-devops@ag-devops-marketplace
-
-# Team auto-install — add to your app repo's .claude/settings.json
-{
-  "extraKnownMarketplaces": {
-    "ag-devops-marketplace": { "source": { "source": "github", "repo": "bcgov-c/ag-devops" } }
-  },
-  "enabledPlugins": { "ag-devops@ag-devops-marketplace": true }
-}
+python ./scripts/scaffold.py --type deployment --name web-api --port 8080
+python ./scripts/scaffold.py --type networkpolicy --name web-api --ingress-from-router
+python ./scripts/scaffold.py --type configmap --name app-config
+python ./scripts/scaffold.py --help
 ```
 
-### Scripted Skills
+Templates are `*.tpl.yaml` / `*.tpl.yml` (not `.yaml.j2`). Markers use `@@VAR@@` style. A post-render guard hard-fails on any unreplaced `@@` marker.
 
-Each skill has `scripts/generate.py` (or `scripts/init.py`) that renders templates and writes output files directly to the workspace — no copy-paste needed. Templates use `@@VAR@@` markers (not Jinja2) to avoid conflicts with Helm `{{ }}` syntax.
+### Skills (20 total)
 
-**Helm Chart Fragment Generators**
+Helm fragments: `scaffold-deployment`, `scaffold-service`, `scaffold-route`, `scaffold-statefulset`, `scaffold-hpa`, `scaffold-pdb`, `scaffold-ingress`, `scaffold-serviceaccount`, `scaffold-pvc`, `scaffold-job`, `scaffold-networkpolicy`, `scaffold-configmap`, `scaffold-cronjob`, `scaffold-externalsecret`
 
-| Skill | Command | Output |
-|---|---|---|
-| `scaffold-deployment` | `/ag-deployment` | `gitops/templates/<name>-deployment.yaml` |
-| `scaffold-service` | `/ag-service` | `gitops/templates/<name>-service.yaml` |
-| `scaffold-route` | `/ag-route` | `gitops/templates/<name>-route.yaml` |
-| `scaffold-statefulset` | `/ag-statefulset` | `gitops/templates/<name>-statefulset.yaml` |
-| `scaffold-hpa` | `/ag-hpa` | `gitops/templates/<name>-hpa.yaml` |
-| `scaffold-pdb` | `/ag-pdb` | `gitops/templates/<name>-pdb.yaml` |
-| `scaffold-ingress` | `/ag-ingress` | `gitops/templates/<name>-ingress.yaml` |
-| `scaffold-serviceaccount` | `/ag-serviceaccount` | `gitops/templates/<name>-serviceaccount.yaml` |
-| `scaffold-pvc` | `/ag-pvc` | `gitops/templates/<name>-pvc.yaml` |
-| `scaffold-job` | `/ag-job` | `gitops/templates/<name>-job.yaml` |
-| `scaffold-networkpolicy` | `/ag-networkpolicy` | `gitops/templates/<name>-networkpolicy.yaml` |
-| `scaffold-openshift-deployment` | — | Deployment with OpenShift SCC-safe settings |
+CI/CD: `scaffold-docker-ci`, `scaffold-sast-ci`, `init-emerald-repo`
 
-**CI/CD & Validation**
+Validation/authoring: `validate-emerald-manifests`, `author-networkpolicy`, `setup-dotnet-ci`
 
-| Skill | Command | What it generates |
-|---|---|---|
-| `init-emerald-repo` | `/ag-init` | Full repo boilerplate — `ci.yml`, `cd.yml`, `Chart.yaml`, `values*.yaml`, `Makefile`, `CODEOWNERS`, `AGENTS.md` |
-| `scaffold-docker-ci` | `/ag-docker-ci` | Docker build + push GitHub Actions workflow |
-| `scaffold-sast-ci` | `/ag-sast-ci` | SAST/CodeQL GitHub Actions workflow |
-| `setup-dotnet-ci` | `/ag-setup-ci` | .NET 8 CI pipeline wiring |
-| `validate-emerald-manifests` | `/ag-validate` | Renders chart, runs datree + polaris + kube-linter + conftest/OPA |
-| `author-networkpolicy` | `/ag-networkpolicy` | Guided NetworkPolicy authoring |
-
-### Agents
+### Agents (3 total)
 
 | Agent | Invoked by | Role |
 |---|---|---|
-| `init-emerald` | `/ag-init` | Asks 8 questions → runs `init-emerald-repo` skill → bootstraps `.github/workflows/`, `gitops/`, `Makefile`, `CODEOWNERS`, `AGENTS.md` |
-| `scaffold-emerald-app` | `/ag-scaffold` | Topology-aware orchestrator — calls all scaffold skills per component, auto-generates NetworkPolicies |
-| `helm-scaffolder` | `/ag-scaffold` | Helm chart fragment authoring assistant |
-| `manifest-validator` | `/ag-validate` | Runs all 4 policy tools, returns structured remediation |
-| `initialize-emerald-repo` | (legacy) | Replaced by `init-emerald` |
+| `init-emerald` | `/ag-init` | Full repo bootstrap |
+| `scaffold-emerald-app` | `/ag-scaffold` | Topology-aware scaffold orchestrator |
+| `manifest-validator` | `/ag-validate` | Policy validation + remediation |
 
 ### AGENTS.md
 

@@ -8,6 +8,7 @@ This is a **shared DevOps library** for application teams — not an application
 - A Helm **library chart** (`cd/shared-lib/ag-helm/`) published to GHCR OCI: `ghcr.io/bcgov-c/helm/ag-helm-templates`
 - Policy-as-code configs for Kubernetes manifests (`cd/policies/`)
 - An example consumer chart (`cd/shared-lib/example-app/`)
+- A **Claude Code plugin** (`plugins/ag-devops/`) v2.0 with scripted skills, agents, and commands for Emerald deployments
 
 ## Key documentation
 
@@ -18,7 +19,7 @@ This is a **shared DevOps library** for application teams — not an application
 - Publishing the Helm chart to GHCR: `cd/shared-lib/ag-helm/PUBLISHING.md`
 
 
-## Claude Code Plugin (`plugins/ag-devops/`)
+## Claude Code Plugin (`plugins/ag-devops/`) — v2.0
 
 The `ag-devops` plugin provides scripted skills and orchestrating agents for scaffolding compliant Emerald deployments. Skills write files directly to the workspace — no copy-paste.
 
@@ -29,18 +30,36 @@ The `ag-devops` plugin provides scripted skills and orchestrating agents for sca
 ```
 plugins/ag-devops/
 ├── AGENTS.md              ← AI agent entry point
-├── plugin.json            ← manifest: 18 skills, 5 agents, 17 commands
-├── symlinks.json          ← 80 registered symlinks (restore via symlink_manager.py)
+├── .claude-plugin/
+│   ├── plugin.json        ← manifest: 20 skills, 3 agents, 21 commands (v2.0.0)
+│   └── marketplace.json   ← marketplace registration
+├── scripts/
+│   ├── scaffold.py        ← UNIFIED scaffold CLI (16 resource types via --type)
+│   └── validate.py        ← 4-tool validation pipeline runner
 ├── assets/
-│   ├── templates/         ← CANONICAL .yaml.j2 / .yml.j2 templates (physical files)
+│   ├── templates/         ← 25 canonical .tpl.yaml/.tpl.yml templates (physical files)
 │   └── policies/          ← symlinks → cd/policies/
 ├── references/            ← symlinks → docs/ and ag-helm/docs/
-├── skills/                ← 18 scripted skills
-├── agents/                ← 5 orchestration agents
-└── commands/              ← 17 slash commands (/ag-*)
+├── skills/                ← 20 scripted skills
+├── agents/                ← 3 orchestration agents
+└── commands/              ← 21 slash commands (/ag-*)
 ```
 
-Templates are physical at the plugin root; skill `assets/templates/` dirs contain file-level symlinks (ADR-003). Scripts stay physically in each skill's `scripts/` dir (ADR-002).
+Templates are physical at the plugin root; skill `scripts/scaffold.py` and `assets/templates/` dirs contain file-level symlinks (ADR-003). On marketplace install, symlinks become hard copies — fully self-contained.
+
+### v2.0 Architecture: Unified scaffold.py
+
+All 16 resource types go through one script:
+
+```bash
+python ./scripts/scaffold.py --type deployment --name web-api --port 8080
+python ./scripts/scaffold.py --type networkpolicy --name web-api --ingress-from-router
+python ./scripts/scaffold.py --type configmap --name app-config
+python ./scripts/scaffold.py --dry-run --type pvc --name pg-data
+python ./scripts/scaffold.py --help
+```
+
+Templates use `@@VAR@@` markers (not Jinja2), plain `str.replace()` — no conflict with Helm `{{ }}`. Post-render guard hard-fails on any unreplaced `@@` marker.
 
 ### Installation
 
@@ -67,32 +86,34 @@ copilot plugin install ag-devops@ag-devops-marketplace
 }
 ```
 
-### Agents
+### Agents (3)
 
 | Agent | Invoked by | What it does |
 |---|---|---|
 | `init-emerald` | `/ag-init` | Bootstraps `.github/workflows/`, `gitops/`, `Makefile`, `CODEOWNERS`, `AGENTS.md` |
 | `scaffold-emerald-app` | `/ag-scaffold` | Topology-aware: calls scaffold-* skills per component, auto-generates NetworkPolicies |
-| `helm-scaffolder` | `/ag-scaffold` | Helm chart fragment authoring assistant |
-| `manifest-validator` | `/ag-validate` | Runs all 4 policy tools, returns structured remediation |
+| `manifest-validator` | `/ag-validate` | Runs all 4 policy tools via `validate.py`, returns structured remediation |
 
-### Scripted Skills — Helm Fragments
+### Scripted Skills — Helm Fragments (14)
 
-| Skill | Command | Output |
-|---|---|---|
-| `scaffold-deployment` | `/ag-deployment` | `gitops/templates/<name>-deployment.yaml` |
-| `scaffold-service` | `/ag-service` | `gitops/templates/<name>-service.yaml` |
-| `scaffold-route` | `/ag-route` | `gitops/templates/<name>-route.yaml` |
-| `scaffold-statefulset` | `/ag-statefulset` | `gitops/templates/<name>-statefulset.yaml` |
-| `scaffold-hpa` | `/ag-hpa` | `gitops/templates/<name>-hpa.yaml` |
-| `scaffold-pdb` | `/ag-pdb` | `gitops/templates/<name>-pdb.yaml` |
-| `scaffold-ingress` | `/ag-ingress` | `gitops/templates/<name>-ingress.yaml` |
-| `scaffold-serviceaccount` | `/ag-serviceaccount` | `gitops/templates/<name>-serviceaccount.yaml` |
-| `scaffold-pvc` | `/ag-pvc` | `gitops/templates/<name>-pvc.yaml` |
-| `scaffold-job` | `/ag-job` | `gitops/templates/<name>-job.yaml` |
-| `scaffold-networkpolicy` | `/ag-networkpolicy` | `gitops/templates/<name>-networkpolicy.yaml` |
+| Skill | Command | `--type` | Output |
+|---|---|---|---|
+| `scaffold-deployment` | `/ag-deployment` | `deployment` | `<name>-deployment.yaml` |
+| `scaffold-service` | `/ag-service` | `service` | `<name>-service.yaml` |
+| `scaffold-route` | `/ag-route` | `route` | `<name>-route.yaml` |
+| `scaffold-statefulset` | `/ag-statefulset` | `statefulset` | `<name>-statefulset.yaml` |
+| `scaffold-hpa` | `/ag-hpa` | `hpa` | `<name>-hpa.yaml` |
+| `scaffold-pdb` | `/ag-pdb` | `pdb` | `<name>-pdb.yaml` |
+| `scaffold-ingress` | `/ag-ingress` | `ingress` | `<name>-ingress.yaml` |
+| `scaffold-serviceaccount` | `/ag-serviceaccount` | `serviceaccount` | `<name>-serviceaccount.yaml` |
+| `scaffold-pvc` | `/ag-pvc` | `pvc` | `<name>-pvc.yaml` |
+| `scaffold-job` | `/ag-job` | `job` | `<name>-job.yaml` |
+| `scaffold-networkpolicy` | `/ag-networkpolicy` | `networkpolicy` | `<name>-networkpolicy.yaml` |
+| `scaffold-configmap` | `/ag-configmap` | `configmap` | `<name>-configmap.yaml` |
+| `scaffold-cronjob` | `/ag-cronjob` | `cronjob` | `<name>-cronjob.yaml` |
+| `scaffold-externalsecret` | `/ag-externalsecret` | `externalsecret` | `<name>-externalsecret.yaml` |
 
-### Scripted Skills — CI/CD & Validation
+### Scripted Skills — CI/CD & Validation (6)
 
 | Skill | Command | What it generates |
 |---|---|---|
@@ -100,7 +121,7 @@ copilot plugin install ag-devops@ag-devops-marketplace
 | `scaffold-docker-ci` | `/ag-docker-ci` | Docker build + push GitHub Actions workflow |
 | `scaffold-sast-ci` | `/ag-sast-ci` | SAST/CodeQL GitHub Actions workflow |
 | `setup-dotnet-ci` | `/ag-setup-ci` | .NET 8 CI pipeline wiring |
-| `validate-emerald-manifests` | `/ag-validate` | Runs datree + polaris + kube-linter + conftest/OPA |
+| `validate-emerald-manifests` | `/ag-validate` | Runs `validate.py`: helm template → datree → polaris → kube-linter → conftest/OPA |
 | `author-networkpolicy` | `/ag-networkpolicy` | Guided NetworkPolicy authoring |
 
 ## Helm library chart (`cd/shared-lib/ag-helm/`)
@@ -137,8 +158,6 @@ The library uses a single dict (`$p`) as the parameter object because Helm `incl
 | Networking | `service`, `route.openshift`, `ingress`, `networkpolicy` |
 | Reliability | `hpa`, `pdb`, `pvc`, `priorityclass` |
 | Identity | `serviceaccount` |
-
-> ConfigMap, Secret, and CronJob templates are intentionally **not** provided.
 
 ### Fragment output shapes
 
@@ -188,6 +207,11 @@ kube-linter lint rendered.yaml --config cd/policies/kube-linter.yaml
 conftest test rendered.yaml --policy cd/policies --all-namespaces --fail-on-warn
 ```
 
+Or use the plugin's automation:
+```bash
+python plugins/ag-devops/scripts/validate.py --chart ./my-chart --release my-release
+```
+
 ### Policy matrix
 
 | Concern | Datree | Polaris | kube-linter | Conftest/OPA |
@@ -200,6 +224,7 @@ conftest test rendered.yaml --policy cd/policies --all-namespaces --fail-on-warn
 | Probes | ✅ | ✅ | ❌ | ❌ |
 | NetworkPolicy exists | ✅ | ✅ | ❌ | ✅ |
 | NetworkPolicy not allow-all | ✅ | partial | ❌ | ✅ |
+| NetworkPolicy namespace isolation | ❌ | ❌ | ❌ | ✅ |
 | Route AVI annotation | ✅ | ✅ | ❌ | ✅ |
 | Route edge termination approval | ❌ | ❌ | ❌ | ✅ |
 
@@ -212,6 +237,7 @@ The Rego policy **hard denies** any of these patterns:
 - Ingress rules missing `from` or `ports`
 - Egress rules missing `to` or `ports`
 - Empty peer selectors inside `from/to` (e.g. `podSelector: {}`)
+- `podSelector` without `namespaceSelector` in an ingress peer (namespace isolation violation)
 - Internet egress (`0.0.0.0/0`) without both `justification` and `approvedBy` annotations
 
 Prefer `AllowIngressFrom` / `AllowEgressTo` intent inputs on `ag-template.networkpolicy` over raw rules to avoid accidental allow-all shapes.
