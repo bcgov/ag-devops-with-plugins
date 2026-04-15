@@ -18,7 +18,7 @@ Generate a policy-compliant StatefulSet Helm template using the `ag-template.sta
 | Flag | Required | Default | Description |
 |---|:---:|---|---|
 | `--name` | ✅ | — | Component name (e.g., `redis`, `postgres`) |
-| `--port` | | `6379` | Container port |
+| `--port` | | `8080` | Container port (pass `--port 6379` for Redis, `--port 5432` for PostgreSQL) |
 | `--data-class` | | `low` | `low`, `medium`, or `high` |
 | `--service-name` | | `<name>-headless` | Headless service name for stable network IDs |
 | `--output-dir` | | `gitops/templates` | Destination directory |

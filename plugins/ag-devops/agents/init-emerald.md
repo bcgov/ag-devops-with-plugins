@@ -33,7 +33,7 @@ Ask the developer these questions **one at a time**. Do not run any scripts unti
 Once all answers are collected, run the following command:
 
 ```bash
-python plugins/ag-devops/skills/init-emerald-repo/scripts/init.py \
+python ./scripts/init.py \
   --project <PROJECT> \
   --registry <REGISTRY> \
   --team <TEAM> \

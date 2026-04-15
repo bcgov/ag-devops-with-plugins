@@ -16,7 +16,7 @@
 {{- end }}
 
 {{- define "@@NAME@@.env" -}}
-- name: ASPNETCORE_URLS
+- name: ASPNETCORE_URLS  # Remove this block if not using ASP.NET Core
   value: http://+:@@PORT@@
 {{- end }}
 
