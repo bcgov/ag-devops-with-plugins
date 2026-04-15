@@ -1,2 +1,8 @@
 # Temporary working files — not committed
 temp/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
