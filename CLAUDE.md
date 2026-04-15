@@ -134,7 +134,25 @@ Prefer `AllowIngressFrom` / `AllowEgressTo` intent inputs on `ag-template.networ
 
 ## Claude Code Plugin (`plugins/ag-devops/`)
 
-This repo ships a Claude Code plugin that agents and teams can install via the marketplace. It provides scripted skills (Python scripts that write files directly) and two orchestrating agents.
+This repo ships a Claude Code plugin that agents and teams can install via the marketplace. It provides scripted skills (Python scripts that write files directly) and orchestrating agents.
+
+### Plugin structure
+
+```
+plugins/ag-devops/
+├── AGENTS.md              ← AI agent entry point — read this first
+├── plugin.json            ← manifest: 18 skills, 5 agents, 17 commands
+├── symlinks.json          ← 80 registered symlinks (restore: symlink_manager.py restore)
+├── assets/
+│   ├── templates/         ← CANONICAL .yaml.j2 / .yml.j2 templates (21 files, physical)
+│   └── policies/          ← symlinks → cd/policies/
+├── references/            ← symlinks → docs/ and ag-helm/docs/
+├── skills/                ← 18 scripted skills
+├── agents/                ← 5 orchestration agents
+└── commands/              ← 17 slash commands (/ag-*)
+```
+
+Each skill's `assets/templates/` and `references/` contain file-level symlinks → plugin root (ADR-003). Scripts stay physically in each skill's `scripts/` (ADR-002 single-skill rule).
 
 ### Installation
 
@@ -158,26 +176,50 @@ copilot plugin install ag-devops@ag-devops-marketplace
 
 ### Scripted Skills
 
-Each skill has a `templates/` directory and a `scripts/generate.py` that renders templates and writes output files directly to the workspace — no copy-paste needed.
+Each skill has `scripts/generate.py` (or `scripts/init.py`) that renders templates and writes output files directly to the workspace — no copy-paste needed. Templates use `@@VAR@@` markers (not Jinja2) to avoid conflicts with Helm `{{ }}` syntax.
 
-| Skill | Script invocation | Output |
+**Helm Chart Fragment Generators**
+
+| Skill | Command | Output |
 |---|---|---|
-| `scaffold-deployment` | `python scripts/generate.py --name web-api --port 8080` | `gitops/templates/web-api-deployment.yaml` |
-| `scaffold-service` | `python scripts/generate.py --name web-api --port 8080` | `gitops/templates/web-api-service.yaml` |
-| `scaffold-route` | `python scripts/generate.py --name web-api --data-class low` | `gitops/templates/web-api-route.yaml` |
-| `scaffold-networkpolicy` | `python scripts/generate.py --name web-api --ingress-from-router` | `gitops/templates/web-api-networkpolicy.yaml` |
-| `init-emerald-repo` | `python scripts/init.py --project my-app --registry ghcr.io/bcgov-c` | Full repo boilerplate (10 files) |
+| `scaffold-deployment` | `/ag-deployment` | `gitops/templates/<name>-deployment.yaml` |
+| `scaffold-service` | `/ag-service` | `gitops/templates/<name>-service.yaml` |
+| `scaffold-route` | `/ag-route` | `gitops/templates/<name>-route.yaml` |
+| `scaffold-statefulset` | `/ag-statefulset` | `gitops/templates/<name>-statefulset.yaml` |
+| `scaffold-hpa` | `/ag-hpa` | `gitops/templates/<name>-hpa.yaml` |
+| `scaffold-pdb` | `/ag-pdb` | `gitops/templates/<name>-pdb.yaml` |
+| `scaffold-ingress` | `/ag-ingress` | `gitops/templates/<name>-ingress.yaml` |
+| `scaffold-serviceaccount` | `/ag-serviceaccount` | `gitops/templates/<name>-serviceaccount.yaml` |
+| `scaffold-pvc` | `/ag-pvc` | `gitops/templates/<name>-pvc.yaml` |
+| `scaffold-job` | `/ag-job` | `gitops/templates/<name>-job.yaml` |
+| `scaffold-networkpolicy` | `/ag-networkpolicy` | `gitops/templates/<name>-networkpolicy.yaml` |
+| `scaffold-openshift-deployment` | — | Deployment with OpenShift SCC-safe settings |
 
-### Template substitution
+**CI/CD & Validation**
 
-All templates use `@@VAR@@`-style markers (not Jinja2) to avoid conflicts with Helm's `{{ }}` Go template syntax. Python scripts use plain `str.replace()` — no extra dependencies required.
+| Skill | Command | What it generates |
+|---|---|---|
+| `init-emerald-repo` | `/ag-init` | Full repo boilerplate — `ci.yml`, `cd.yml`, `Chart.yaml`, `values*.yaml`, `Makefile`, `CODEOWNERS`, `AGENTS.md` |
+| `scaffold-docker-ci` | `/ag-docker-ci` | Docker build + push GitHub Actions workflow |
+| `scaffold-sast-ci` | `/ag-sast-ci` | SAST/CodeQL GitHub Actions workflow |
+| `setup-dotnet-ci` | `/ag-setup-ci` | .NET 8 CI pipeline wiring |
+| `validate-emerald-manifests` | `/ag-validate` | Renders chart, runs datree + polaris + kube-linter + conftest/OPA |
+| `author-networkpolicy` | `/ag-networkpolicy` | Guided NetworkPolicy authoring |
 
 ### Agents
 
-| Agent | Role |
-|---|---|
-| `init-emerald` | Asks 8 questions → runs `init-emerald-repo` skill → bootstraps `.github/workflows/`, `gitops/`, `Makefile`, `CODEOWNERS` |
-| `scaffold-emerald-app` | Topology-aware orchestrator — calls all 4 scaffold skills per component, auto-generates NetworkPolicies |
+| Agent | Invoked by | Role |
+|---|---|---|
+| `init-emerald` | `/ag-init` | Asks 8 questions → runs `init-emerald-repo` skill → bootstraps `.github/workflows/`, `gitops/`, `Makefile`, `CODEOWNERS`, `AGENTS.md` |
+| `scaffold-emerald-app` | `/ag-scaffold` | Topology-aware orchestrator — calls all scaffold skills per component, auto-generates NetworkPolicies |
+| `helm-scaffolder` | `/ag-scaffold` | Helm chart fragment authoring assistant |
+| `manifest-validator` | `/ag-validate` | Runs all 4 policy tools, returns structured remediation |
+| `initialize-emerald-repo` | (legacy) | Replaced by `init-emerald` |
+
+### AGENTS.md
+
+`/ag-init` writes an `AGENTS.md` to the **project root** of the user's repo. This file describes the gitops layout so any AI agent working in that repo understands the structure without reading every file.
+
 ## Key documentation
 
 - Full CI reference: `docs/CI.md`

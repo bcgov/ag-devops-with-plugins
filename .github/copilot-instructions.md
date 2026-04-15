@@ -22,6 +22,26 @@ This is a **shared DevOps library** for application teams — not an application
 
 The `ag-devops` plugin provides scripted skills and orchestrating agents for scaffolding compliant Emerald deployments. Skills write files directly to the workspace — no copy-paste.
 
+> **AI agents:** Read `plugins/ag-devops/AGENTS.md` first — it is the authoritative entry point for the plugin's structure, skills, agents, and commands.
+
+### Plugin structure
+
+```
+plugins/ag-devops/
+├── AGENTS.md              ← AI agent entry point
+├── plugin.json            ← manifest: 18 skills, 5 agents, 17 commands
+├── symlinks.json          ← 80 registered symlinks (restore via symlink_manager.py)
+├── assets/
+│   ├── templates/         ← CANONICAL .yaml.j2 / .yml.j2 templates (physical files)
+│   └── policies/          ← symlinks → cd/policies/
+├── references/            ← symlinks → docs/ and ag-helm/docs/
+├── skills/                ← 18 scripted skills
+├── agents/                ← 5 orchestration agents
+└── commands/              ← 17 slash commands (/ag-*)
+```
+
+Templates are physical at the plugin root; skill `assets/templates/` dirs contain file-level symlinks (ADR-003). Scripts stay physically in each skill's `scripts/` dir (ADR-002).
+
 ### Installation
 
 ```bash
@@ -51,19 +71,38 @@ copilot plugin install ag-devops@ag-devops-marketplace
 
 | Agent | Invoked by | What it does |
 |---|---|---|
-| `init-emerald` | `/ag-init` | Bootstraps `.github/workflows/`, `gitops/`, `Makefile`, `CODEOWNERS`, `.gitignore` |
-| `scaffold-emerald-app` | `/ag-scaffold` | Topology-aware: calls all 4 scaffold skills per component, auto-generates NetworkPolicies |
+| `init-emerald` | `/ag-init` | Bootstraps `.github/workflows/`, `gitops/`, `Makefile`, `CODEOWNERS`, `AGENTS.md` |
+| `scaffold-emerald-app` | `/ag-scaffold` | Topology-aware: calls scaffold-* skills per component, auto-generates NetworkPolicies |
+| `helm-scaffolder` | `/ag-scaffold` | Helm chart fragment authoring assistant |
 | `manifest-validator` | `/ag-validate` | Runs all 4 policy tools, returns structured remediation |
 
-### Scripted Skills
+### Scripted Skills — Helm Fragments
 
-| Skill | Output file |
-|---|---|
-| `scaffold-deployment` | `gitops/templates/<name>-deployment.yaml` |
-| `scaffold-service` | `gitops/templates/<name>-service.yaml` |
-| `scaffold-route` | `gitops/templates/<name>-route.yaml` |
-| `scaffold-networkpolicy` | `gitops/templates/<name>-networkpolicy.yaml` |
-| `init-emerald-repo` | Full repo boilerplate (10 files) |
+| Skill | Command | Output |
+|---|---|---|
+| `scaffold-deployment` | `/ag-deployment` | `gitops/templates/<name>-deployment.yaml` |
+| `scaffold-service` | `/ag-service` | `gitops/templates/<name>-service.yaml` |
+| `scaffold-route` | `/ag-route` | `gitops/templates/<name>-route.yaml` |
+| `scaffold-statefulset` | `/ag-statefulset` | `gitops/templates/<name>-statefulset.yaml` |
+| `scaffold-hpa` | `/ag-hpa` | `gitops/templates/<name>-hpa.yaml` |
+| `scaffold-pdb` | `/ag-pdb` | `gitops/templates/<name>-pdb.yaml` |
+| `scaffold-ingress` | `/ag-ingress` | `gitops/templates/<name>-ingress.yaml` |
+| `scaffold-serviceaccount` | `/ag-serviceaccount` | `gitops/templates/<name>-serviceaccount.yaml` |
+| `scaffold-pvc` | `/ag-pvc` | `gitops/templates/<name>-pvc.yaml` |
+| `scaffold-job` | `/ag-job` | `gitops/templates/<name>-job.yaml` |
+| `scaffold-networkpolicy` | `/ag-networkpolicy` | `gitops/templates/<name>-networkpolicy.yaml` |
+
+### Scripted Skills — CI/CD & Validation
+
+| Skill | Command | What it generates |
+|---|---|---|
+| `init-emerald-repo` | `/ag-init` | Full repo boilerplate (ci.yml, cd.yml, Chart.yaml, values*.yaml, Makefile, CODEOWNERS, AGENTS.md) |
+| `scaffold-docker-ci` | `/ag-docker-ci` | Docker build + push GitHub Actions workflow |
+| `scaffold-sast-ci` | `/ag-sast-ci` | SAST/CodeQL GitHub Actions workflow |
+| `setup-dotnet-ci` | `/ag-setup-ci` | .NET 8 CI pipeline wiring |
+| `validate-emerald-manifests` | `/ag-validate` | Runs datree + polaris + kube-linter + conftest/OPA |
+| `author-networkpolicy` | `/ag-networkpolicy` | Guided NetworkPolicy authoring |
+
 ## Helm library chart (`cd/shared-lib/ag-helm/`)
 
 ### "Set + define + include" authoring pattern

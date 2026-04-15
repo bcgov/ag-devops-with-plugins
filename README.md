@@ -70,7 +70,25 @@ The `ag-devops` plugin gives Claude Code the tools to scaffold a fully policy-co
 | `validate-emerald-manifests` | `/ag-validate` | Runs datree + polaris + kube-linter + conftest/OPA |
 | `author-networkpolicy` | `/ag-networkpolicy` | Guided NetworkPolicy authoring |
 
-### Installation
+### Plugin structure
+
+```
+plugins/ag-devops/
+├── AGENTS.md              ← AI agent entry point — read this first
+├── README.md              ← human installation guide
+├── CLAUDE.md              ← AI behavioural rules for this plugin
+├── plugin.json            ← manifest: 18 skills, 5 agents, 17 commands
+├── symlinks.json          ← 80 registered symlinks (restore: symlink_manager.py restore)
+├── assets/
+│   ├── templates/         ← CANONICAL .yaml.j2 / .yml.j2 templates (21 files)
+│   └── policies/          ← symlinks → cd/policies/ (datree, polaris, OPA, kube-linter)
+├── references/            ← symlinks → docs/ and ag-helm/docs/
+├── skills/                ← 18 scripted skills (each has scripts/, assets/templates/, references/)
+├── agents/                ← 5 orchestration agents
+└── commands/              ← 17 slash commands
+```
+
+Templates are physical files at the plugin root (`assets/templates/`); each skill's `assets/templates/` contains file-level symlinks. This means the plugin is fully self-contained when installed via marketplace — no broken paths.
 
 #### Claude Code (via Plugin Marketplace)
 

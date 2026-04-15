@@ -12,7 +12,7 @@ The `ag-devops` plugin provides scripted, policy-compliant tooling for BC Govern
 plugins/ag-devops/
 ├── AGENTS.md                    ← you are here
 ├── README.md                    ← installation + quickstart for humans
-├── plugin.json                  ← skill/agent/command manifest
+├── plugin.json                  ← skill/agent/command manifest (v1.3.0)
 ├── CLAUDE.md                    ← AI agent behavioural rules
 ├── symlinks.json                ← all registered symlinks (restore with symlink_manager.py)
 ├── assets/
@@ -30,6 +30,7 @@ plugins/ag-devops/
 - Each skill's `assets/templates/` contains **file-level symlinks** → plugin root
 - Each skill's `references/` contains **file-level symlinks** → plugin root references
 - On `skills update` / marketplace install, the bootstrap installer resolves all symlinks to real copies so the installed skill in `.agents/` is fully self-contained
+- To restore symlinks after a `git reset --hard`: `python .agents/skills/symlink-manager/scripts/symlink_manager.py restore --manifest plugins/ag-devops/symlinks.json`
 
 ## Skills
 
