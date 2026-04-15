@@ -85,7 +85,11 @@ def assert_no_markers(content, filename=""):
 
 
 def assert_valid_yaml(content, filename=""):
-    """Assert content is parseable YAML (may be multi-document)."""
+    """Assert content is parseable YAML — only for non-Helm files (CI workflows).
+    Helm templates contain {{ }} Go template syntax which is not valid plain YAML."""
+    # Skip YAML check for Helm templates (they're not pure YAML)
+    if "{{" in content:
+        return
     try:
         list(yaml.safe_load_all(content))
     except yaml.YAMLError as exc:

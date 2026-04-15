@@ -1,7 +1,7 @@
 {
   "name": "ag-devops",
   "description": "OpenShift Emerald deployment toolkit for AG application teams: scaffold Helm charts, validate manifests against policy, author compliant NetworkPolicies, and wire up .NET 8 CI pipelines",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "author": {
     "name": "BC Government - Attorney General",
     "email": "connect.richfrem@gmail.com"
@@ -34,8 +34,10 @@
     "scaffold-job",
     "scaffold-docker-ci",
     "scaffold-sast-ci",
+    "scaffold-configmap",
+    "scaffold-cronjob",
+    "scaffold-externalsecret",
     "init-emerald-repo",
-    "scaffold-openshift-deployment",
     "validate-emerald-manifests",
     "author-networkpolicy",
     "setup-dotnet-ci"
@@ -43,9 +45,7 @@
   "agents": [
     "init-emerald",
     "scaffold-emerald-app",
-    "initialize-emerald-repo",
-    "manifest-validator",
-    "helm-scaffolder"
+    "manifest-validator"
   ],
   "commands": [
     "ag-init",
@@ -64,6 +64,9 @@
     "ag-pvc",
     "ag-job",
     "ag-docker-ci",
-    "ag-sast-ci"
+    "ag-sast-ci",
+    "ag-configmap",
+    "ag-cronjob",
+    "ag-externalsecret"
   ]
 }
