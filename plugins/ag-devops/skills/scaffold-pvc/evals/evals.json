@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Create a PersistentVolumeClaim for postgres-data with 10Gi storage",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Generate a Deployment for web-api",
+    "should_trigger": false
+  }
+]

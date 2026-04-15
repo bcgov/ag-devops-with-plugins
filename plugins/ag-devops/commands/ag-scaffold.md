@@ -1,16 +1,5 @@
 ---
-description: "Scaffold a new Helm chart for OpenShift Emerald deployment using ag-helm-templates. Guides through topology questions and generates Chart.yaml, values.yaml, and policy-compliant templates."
+name: ag-scaffold
+description: "Scaffold one or more Helm components for an Emerald deployment using scripted skills. The orchestrating agent asks about your topology (components, ports, data class, NetworkPolicy rules) then calls scaffold-deployment, scaffold-service, scaffold-route, and scaffold-networkpolicy scripts to write all files into gitops/templates/ directly."
 ---
-
-Use the `scaffold-openshift-deployment` skill to scaffold a complete, policy-compliant Helm chart for OpenShift Emerald.
-
-Start by asking the developer:
-1. App name and target namespace
-2. Which components (frontend, web-api, worker, database)
-3. Which components need an external Route
-4. Data class (low / medium / high)
-5. Image registry path
-
-Then generate all chart files and confirm they are ready for `helm lint` and policy validation.
-
-When scaffolding is complete, remind the developer to run `validate-emerald-manifests` (or `/ag-validate`) to confirm all four policy checks pass before committing.
+Use the `scaffold-emerald-app` agent to scaffold all required Helm templates for this application.

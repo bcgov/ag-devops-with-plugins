@@ -1,0 +1,14 @@
+{{- $p := dict "Values" .Values -}}
+{{- $_ := set $p "ApplicationGroup" .Values.project -}}
+{{- $_ := set $p "Name" "@@NAME@@" -}}
+{{- $_ := set $p "Namespace" $.Release.Namespace -}}
+{{- $_ := set $p "ModuleValues" .Values.@@VALUES_KEY@@ -}}
+{{- $_ := set $p "ServicePorts" "@@NAME@@.servicePorts" -}}
+{{ include "ag-template.service" $p }}
+
+{{- define "@@NAME@@.servicePorts" -}}
+- name: http
+  port: @@PORT@@
+  targetPort: http
+  protocol: TCP
+{{- end }}

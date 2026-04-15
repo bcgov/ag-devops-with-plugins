@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Generate a Service Helm template for web-api",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Create an HPA for my deployment",
+    "should_trigger": false
+  }
+]

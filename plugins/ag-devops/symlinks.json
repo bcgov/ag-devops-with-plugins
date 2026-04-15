@@ -1,0 +1,485 @@
+{
+  "version": 1,
+  "links": [
+    {
+      "src": "docs/CI.md",
+      "dst": "plugins/ag-devops/references/CI.md",
+      "strategy": "symlink",
+      "description": "CI workflow reference"
+    },
+    {
+      "src": "docs/CD.md",
+      "dst": "plugins/ag-devops/references/CD.md",
+      "strategy": "symlink",
+      "description": "CD Helm + policy reference"
+    },
+    {
+      "src": "docs/CI-CD-START-HERE.md",
+      "dst": "plugins/ag-devops/references/CI-CD-START-HERE.md",
+      "strategy": "symlink",
+      "description": "Getting-started index"
+    },
+    {
+      "src": "docs/DEVELOPERS-GUIDE.md",
+      "dst": "plugins/ag-devops/references/DEVELOPERS-GUIDE.md",
+      "strategy": "symlink",
+      "description": "Full developer guide"
+    },
+    {
+      "src": "docs/DEVELOPERS-GUIDE copy.md",
+      "dst": "plugins/ag-devops/references/DEVELOPERS-GUIDE-SIMPLE.md",
+      "strategy": "symlink",
+      "description": "Simplified deny-by-default guide"
+    },
+    {
+      "src": "docs/overview.md",
+      "dst": "plugins/ag-devops/references/overview.md",
+      "strategy": "symlink",
+      "description": "Repo overview"
+    },
+    {
+      "src": "cd/shared-lib/ag-helm/docs/SIMPLE-API.md",
+      "dst": "plugins/ag-devops/references/SIMPLE-API.md",
+      "strategy": "symlink",
+      "description": "Helm library API contract"
+    },
+    {
+      "src": "cd/shared-lib/ag-helm/docs/EXAMPLES.md",
+      "dst": "plugins/ag-devops/references/EXAMPLES.md",
+      "strategy": "symlink",
+      "description": "Helm library copy-paste examples"
+    },
+    {
+      "src": "cd/policies/datree-policies.yaml",
+      "dst": "plugins/ag-devops/assets/policies/datree-policies.yaml",
+      "strategy": "symlink",
+      "description": "Policy config: datree-policies.yaml"
+    },
+    {
+      "src": "cd/policies/polaris.yaml",
+      "dst": "plugins/ag-devops/assets/policies/polaris.yaml",
+      "strategy": "symlink",
+      "description": "Policy config: polaris.yaml"
+    },
+    {
+      "src": "cd/policies/kube-linter.yaml",
+      "dst": "plugins/ag-devops/assets/policies/kube-linter.yaml",
+      "strategy": "symlink",
+      "description": "Policy config: kube-linter.yaml"
+    },
+    {
+      "src": "cd/policies/policies.yaml",
+      "dst": "plugins/ag-devops/assets/policies/policies.yaml",
+      "strategy": "symlink",
+      "description": "Policy config: policies.yaml"
+    },
+    {
+      "src": "cd/policies/network-policies.rego",
+      "dst": "plugins/ag-devops/assets/policies/network-policies.rego",
+      "strategy": "symlink",
+      "description": "Policy config: network-policies.rego"
+    },
+    {
+      "src": "cd/policies/routes-edge-termination.rego",
+      "dst": "plugins/ag-devops/assets/policies/routes-edge-termination.rego",
+      "strategy": "symlink",
+      "description": "Policy config: routes-edge-termination.rego"
+    },
+    {
+      "src": "cd/policies/avi-infrasetting-annotation.rego",
+      "dst": "plugins/ag-devops/assets/policies/avi-infrasetting-annotation.rego",
+      "strategy": "symlink",
+      "description": "Policy config: avi-infrasetting-annotation.rego"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/deployment.yaml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-deployment/assets/templates/deployment.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: deployment.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/service.yaml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-service/assets/templates/service.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: service.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/route.yaml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-route/assets/templates/route.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: route.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/statefulset.yaml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-statefulset/assets/templates/statefulset.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: statefulset.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/hpa.yaml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-hpa/assets/templates/hpa.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: hpa.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/pdb.yaml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-pdb/assets/templates/pdb.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: pdb.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/ingress.yaml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-ingress/assets/templates/ingress.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: ingress.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/job.yaml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-job/assets/templates/job.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: job.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/pvc.yaml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-pvc/assets/templates/pvc.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: pvc.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/serviceaccount.yaml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-serviceaccount/assets/templates/serviceaccount.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: serviceaccount.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/networkpolicy.yaml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-networkpolicy/assets/templates/networkpolicy.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: networkpolicy.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/docker.yml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-docker-ci/assets/templates/docker.yml.j2",
+      "strategy": "symlink",
+      "description": "Template: docker.yml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/sast.yml.j2",
+      "dst": "plugins/ag-devops/skills/scaffold-sast-ci/assets/templates/sast.yml.j2",
+      "strategy": "symlink",
+      "description": "Template: sast.yml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/cd.yml.j2",
+      "dst": "plugins/ag-devops/skills/init-emerald-repo/assets/templates/cd.yml.j2",
+      "strategy": "symlink",
+      "description": "Template: cd.yml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/Chart.yaml.j2",
+      "dst": "plugins/ag-devops/skills/init-emerald-repo/assets/templates/Chart.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: Chart.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/ci.yml.j2",
+      "dst": "plugins/ag-devops/skills/init-emerald-repo/assets/templates/ci.yml.j2",
+      "strategy": "symlink",
+      "description": "Template: ci.yml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/CODEOWNERS.j2",
+      "dst": "plugins/ag-devops/skills/init-emerald-repo/assets/templates/CODEOWNERS.j2",
+      "strategy": "symlink",
+      "description": "Template: CODEOWNERS.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/gitignore-additions.j2",
+      "dst": "plugins/ag-devops/skills/init-emerald-repo/assets/templates/gitignore-additions.j2",
+      "strategy": "symlink",
+      "description": "Template: gitignore-additions.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/Makefile.j2",
+      "dst": "plugins/ag-devops/skills/init-emerald-repo/assets/templates/Makefile.j2",
+      "strategy": "symlink",
+      "description": "Template: Makefile.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/values-env.yaml.j2",
+      "dst": "plugins/ag-devops/skills/init-emerald-repo/assets/templates/values-env.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: values-env.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/assets/templates/values.yaml.j2",
+      "dst": "plugins/ag-devops/skills/init-emerald-repo/assets/templates/values.yaml.j2",
+      "strategy": "symlink",
+      "description": "Template: values.yaml.j2"
+    },
+    {
+      "src": "plugins/ag-devops/references/SIMPLE-API.md",
+      "dst": "plugins/ag-devops/skills/scaffold-deployment/references/SIMPLE-API.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-deployment"
+    },
+    {
+      "src": "plugins/ag-devops/references/EXAMPLES.md",
+      "dst": "plugins/ag-devops/skills/scaffold-deployment/references/EXAMPLES.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-deployment"
+    },
+    {
+      "src": "plugins/ag-devops/references/SIMPLE-API.md",
+      "dst": "plugins/ag-devops/skills/scaffold-service/references/SIMPLE-API.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-service"
+    },
+    {
+      "src": "plugins/ag-devops/references/EXAMPLES.md",
+      "dst": "plugins/ag-devops/skills/scaffold-service/references/EXAMPLES.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-service"
+    },
+    {
+      "src": "plugins/ag-devops/references/SIMPLE-API.md",
+      "dst": "plugins/ag-devops/skills/scaffold-route/references/SIMPLE-API.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-route"
+    },
+    {
+      "src": "plugins/ag-devops/references/EXAMPLES.md",
+      "dst": "plugins/ag-devops/skills/scaffold-route/references/EXAMPLES.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-route"
+    },
+    {
+      "src": "plugins/ag-devops/references/SIMPLE-API.md",
+      "dst": "plugins/ag-devops/skills/scaffold-statefulset/references/SIMPLE-API.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-statefulset"
+    },
+    {
+      "src": "plugins/ag-devops/references/EXAMPLES.md",
+      "dst": "plugins/ag-devops/skills/scaffold-statefulset/references/EXAMPLES.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-statefulset"
+    },
+    {
+      "src": "plugins/ag-devops/references/SIMPLE-API.md",
+      "dst": "plugins/ag-devops/skills/scaffold-hpa/references/SIMPLE-API.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-hpa"
+    },
+    {
+      "src": "plugins/ag-devops/references/EXAMPLES.md",
+      "dst": "plugins/ag-devops/skills/scaffold-hpa/references/EXAMPLES.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-hpa"
+    },
+    {
+      "src": "plugins/ag-devops/references/SIMPLE-API.md",
+      "dst": "plugins/ag-devops/skills/scaffold-pdb/references/SIMPLE-API.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-pdb"
+    },
+    {
+      "src": "plugins/ag-devops/references/EXAMPLES.md",
+      "dst": "plugins/ag-devops/skills/scaffold-pdb/references/EXAMPLES.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-pdb"
+    },
+    {
+      "src": "plugins/ag-devops/references/SIMPLE-API.md",
+      "dst": "plugins/ag-devops/skills/scaffold-ingress/references/SIMPLE-API.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-ingress"
+    },
+    {
+      "src": "plugins/ag-devops/references/EXAMPLES.md",
+      "dst": "plugins/ag-devops/skills/scaffold-ingress/references/EXAMPLES.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-ingress"
+    },
+    {
+      "src": "plugins/ag-devops/references/SIMPLE-API.md",
+      "dst": "plugins/ag-devops/skills/scaffold-job/references/SIMPLE-API.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-job"
+    },
+    {
+      "src": "plugins/ag-devops/references/EXAMPLES.md",
+      "dst": "plugins/ag-devops/skills/scaffold-job/references/EXAMPLES.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-job"
+    },
+    {
+      "src": "plugins/ag-devops/references/SIMPLE-API.md",
+      "dst": "plugins/ag-devops/skills/scaffold-pvc/references/SIMPLE-API.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-pvc"
+    },
+    {
+      "src": "plugins/ag-devops/references/EXAMPLES.md",
+      "dst": "plugins/ag-devops/skills/scaffold-pvc/references/EXAMPLES.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-pvc"
+    },
+    {
+      "src": "plugins/ag-devops/references/SIMPLE-API.md",
+      "dst": "plugins/ag-devops/skills/scaffold-serviceaccount/references/SIMPLE-API.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-serviceaccount"
+    },
+    {
+      "src": "plugins/ag-devops/references/EXAMPLES.md",
+      "dst": "plugins/ag-devops/skills/scaffold-serviceaccount/references/EXAMPLES.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-serviceaccount"
+    },
+    {
+      "src": "plugins/ag-devops/references/CD.md",
+      "dst": "plugins/ag-devops/skills/scaffold-networkpolicy/references/CD.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-networkpolicy"
+    },
+    {
+      "src": "plugins/ag-devops/references/DEVELOPERS-GUIDE-SIMPLE.md",
+      "dst": "plugins/ag-devops/skills/scaffold-networkpolicy/references/DEVELOPERS-GUIDE-SIMPLE.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-networkpolicy"
+    },
+    {
+      "src": "plugins/ag-devops/references/CD.md",
+      "dst": "plugins/ag-devops/skills/author-networkpolicy/references/CD.md",
+      "strategy": "symlink",
+      "description": "Shared reference for author-networkpolicy"
+    },
+    {
+      "src": "plugins/ag-devops/references/DEVELOPERS-GUIDE-SIMPLE.md",
+      "dst": "plugins/ag-devops/skills/author-networkpolicy/references/DEVELOPERS-GUIDE-SIMPLE.md",
+      "strategy": "symlink",
+      "description": "Shared reference for author-networkpolicy"
+    },
+    {
+      "src": "plugins/ag-devops/references/CI.md",
+      "dst": "plugins/ag-devops/skills/scaffold-docker-ci/references/CI.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-docker-ci"
+    },
+    {
+      "src": "plugins/ag-devops/references/CI.md",
+      "dst": "plugins/ag-devops/skills/scaffold-sast-ci/references/CI.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-sast-ci"
+    },
+    {
+      "src": "plugins/ag-devops/references/CI.md",
+      "dst": "plugins/ag-devops/skills/setup-dotnet-ci/references/CI.md",
+      "strategy": "symlink",
+      "description": "Shared reference for setup-dotnet-ci"
+    },
+    {
+      "src": "plugins/ag-devops/references/CI-CD-START-HERE.md",
+      "dst": "plugins/ag-devops/skills/init-emerald-repo/references/CI-CD-START-HERE.md",
+      "strategy": "symlink",
+      "description": "Shared reference for init-emerald-repo"
+    },
+    {
+      "src": "plugins/ag-devops/references/overview.md",
+      "dst": "plugins/ag-devops/skills/init-emerald-repo/references/overview.md",
+      "strategy": "symlink",
+      "description": "Shared reference for init-emerald-repo"
+    },
+    {
+      "src": "plugins/ag-devops/references/CD.md",
+      "dst": "plugins/ag-devops/skills/validate-emerald-manifests/references/CD.md",
+      "strategy": "symlink",
+      "description": "Shared reference for validate-emerald-manifests"
+    },
+    {
+      "src": "plugins/ag-devops/references/SIMPLE-API.md",
+      "dst": "plugins/ag-devops/skills/scaffold-openshift-deployment/references/SIMPLE-API.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-openshift-deployment"
+    },
+    {
+      "src": "plugins/ag-devops/references/EXAMPLES.md",
+      "dst": "plugins/ag-devops/skills/scaffold-openshift-deployment/references/EXAMPLES.md",
+      "strategy": "symlink",
+      "description": "Shared reference for scaffold-openshift-deployment"
+    },
+    {
+      "src": "plugins/ag-devops/assets/policies/network-policies.rego",
+      "dst": "plugins/ag-devops/skills/scaffold-networkpolicy/assets/policies/network-policies.rego",
+      "strategy": "symlink",
+      "description": "Policy ref for scaffold-networkpolicy"
+    },
+    {
+      "src": "plugins/ag-devops/assets/policies/avi-infrasetting-annotation.rego",
+      "dst": "plugins/ag-devops/skills/scaffold-networkpolicy/assets/policies/avi-infrasetting-annotation.rego",
+      "strategy": "symlink",
+      "description": "Policy ref for scaffold-networkpolicy"
+    },
+    {
+      "src": "plugins/ag-devops/assets/policies/network-policies.rego",
+      "dst": "plugins/ag-devops/skills/author-networkpolicy/assets/policies/network-policies.rego",
+      "strategy": "symlink",
+      "description": "Policy ref for author-networkpolicy"
+    },
+    {
+      "src": "plugins/ag-devops/assets/policies/avi-infrasetting-annotation.rego",
+      "dst": "plugins/ag-devops/skills/author-networkpolicy/assets/policies/avi-infrasetting-annotation.rego",
+      "strategy": "symlink",
+      "description": "Policy ref for author-networkpolicy"
+    },
+    {
+      "src": "plugins/ag-devops/assets/policies/datree-policies.yaml",
+      "dst": "plugins/ag-devops/skills/validate-emerald-manifests/assets/policies/datree-policies.yaml",
+      "strategy": "symlink",
+      "description": "Policy ref for validate-emerald-manifests"
+    },
+    {
+      "src": "plugins/ag-devops/assets/policies/polaris.yaml",
+      "dst": "plugins/ag-devops/skills/validate-emerald-manifests/assets/policies/polaris.yaml",
+      "strategy": "symlink",
+      "description": "Policy ref for validate-emerald-manifests"
+    },
+    {
+      "src": "plugins/ag-devops/assets/policies/kube-linter.yaml",
+      "dst": "plugins/ag-devops/skills/validate-emerald-manifests/assets/policies/kube-linter.yaml",
+      "strategy": "symlink",
+      "description": "Policy ref for validate-emerald-manifests"
+    },
+    {
+      "src": "plugins/ag-devops/assets/policies/policies.yaml",
+      "dst": "plugins/ag-devops/skills/validate-emerald-manifests/assets/policies/policies.yaml",
+      "strategy": "symlink",
+      "description": "Policy ref for validate-emerald-manifests"
+    },
+    {
+      "src": "plugins/ag-devops/assets/policies/network-policies.rego",
+      "dst": "plugins/ag-devops/skills/validate-emerald-manifests/assets/policies/network-policies.rego",
+      "strategy": "symlink",
+      "description": "Policy ref for validate-emerald-manifests"
+    },
+    {
+      "src": "plugins/ag-devops/assets/policies/routes-edge-termination.rego",
+      "dst": "plugins/ag-devops/skills/validate-emerald-manifests/assets/policies/routes-edge-termination.rego",
+      "strategy": "symlink",
+      "description": "Policy ref for validate-emerald-manifests"
+    },
+    {
+      "src": "plugins/ag-devops/assets/policies/avi-infrasetting-annotation.rego",
+      "dst": "plugins/ag-devops/skills/validate-emerald-manifests/assets/policies/avi-infrasetting-annotation.rego",
+      "strategy": "symlink",
+      "description": "Policy ref for validate-emerald-manifests"
+    },
+    {
+      "src": "plugins\\ag-devops\\assets\\templates\\AGENTS.md.j2",
+      "dst": "plugins\\ag-devops\\skills\\init-emerald-repo\\assets\\templates\\AGENTS.md.j2",
+      "strategy": "symlink",
+      "description": ""
+    }
+  ]
+}

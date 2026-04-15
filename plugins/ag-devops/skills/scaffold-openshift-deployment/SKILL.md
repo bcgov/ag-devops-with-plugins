@@ -1,6 +1,9 @@
 ---
 name: scaffold-openshift-deployment
 description: Use when creating a new application chart for OpenShift Emerald deployment, starting a new BC Gov AG project, or when asked to set up Helm templates, Chart.yaml dependencies, values files, or a full deployment package from scratch
+allowed-tools:
+  - Read
+  - Bash
 ---
 
 # Scaffold OpenShift Emerald Deployment

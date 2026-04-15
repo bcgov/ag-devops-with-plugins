@@ -1,0 +1,14 @@
+commonLabels:
+  environment: @@ENV_LABEL@@
+
+# Per-environment overrides — set image tags and route hosts here.
+# Example (web-api):
+# webApi:
+#   image:
+#     tag: "latest"          # pin to a specific digest in prod: sha256:...
+#   replicas: @@REPLICAS@@
+#   route:
+#     enabled: @@ROUTE_ENABLED@@
+#     host: @@PROJECT@@-@@ENV@@.apps.emerald.devops.gov.bc.ca
+#     annotations:
+#       aviinfrasetting.ako.vmware.com/name: dataclass-low

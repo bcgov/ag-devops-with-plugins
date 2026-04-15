@@ -1,0 +1,1 @@
+../../../../assets/policies/avi-infrasetting-annotation.rego

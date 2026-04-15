@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Generate a Deployment Helm template for web-api on port 8080",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Create a NetworkPolicy for my app",
+    "should_trigger": false
+  }
+]

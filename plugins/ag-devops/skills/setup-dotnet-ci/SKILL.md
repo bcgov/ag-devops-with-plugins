@@ -1,6 +1,9 @@
 ---
 name: setup-dotnet-ci
 description: Use when wiring up GitHub Actions CI for a .NET 8 project using ag-devops shared templates, when adding build/test/lint/package workflows to an app repo, or when a CI pipeline is missing or broken for a BC Gov AG .NET service
+allowed-tools:
+  - Read
+  - Bash
 ---
 
 # Set Up .NET 8 CI with ag-devops Templates

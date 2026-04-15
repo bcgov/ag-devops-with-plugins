@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Run all policy checks on my Helm chart before deploying to Emerald",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Create a NetworkPolicy for web-api",
+    "should_trigger": false
+  }
+]

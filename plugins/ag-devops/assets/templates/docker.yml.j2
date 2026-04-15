@@ -1,0 +1,23 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  docker:
+    uses: bcgov-c/ag-devops/.github/workflows/docker.yml@main
+    with:
+      image: @@IMAGE@@
+      registry: @@REGISTRY@@
+      context: @@CONTEXT@@
+      file: @@FILE@@
+      platforms: @@PLATFORMS@@
+      auto_tagging: "true"
+      push: ${{ github.event_name == 'push' && 'true' || 'false' }}
+      scan: "true"
+    secrets:
+      registry_password: ${{ secrets.GHCR_TOKEN }}
+      registry_username: ${{ secrets.GHCR_USERNAME }}

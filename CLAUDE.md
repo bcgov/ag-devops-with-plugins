@@ -10,6 +10,7 @@ A **shared DevOps library** for application teams. It is not an application. It 
 - A Helm **library chart** (`cd/shared-lib/ag-helm/`) published to GHCR OCI: `ghcr.io/bcgov-c/helm/ag-helm-templates`
 - Policy-as-code configs for Kubernetes manifests (`cd/policies/`)
 - An example consumer chart (`cd/shared-lib/example-app/`)
+- A **Claude Code plugin** (`plugins/ag-devops/`) with scripted skills and orchestrating agents for Emerald deployments
 
 ## Working with the Helm library chart
 
@@ -130,6 +131,53 @@ Prefer `AllowIngressFrom` / `AllowEgressTo` intent inputs on `ag-template.networ
 | Route AVI annotation | ✅ | ✅ | ❌ | ✅ |
 | Route edge termination approval | ❌ | ❌ | ❌ | ✅ |
 
+
+## Claude Code Plugin (`plugins/ag-devops/`)
+
+This repo ships a Claude Code plugin that agents and teams can install via the marketplace. It provides scripted skills (Python scripts that write files directly) and two orchestrating agents.
+
+### Installation
+
+```bash
+# Claude Code
+/plugin marketplace add bcgov-c/ag-devops
+/plugin install ag-devops@ag-devops-marketplace
+
+# GitHub Copilot CLI
+copilot plugin marketplace add bcgov-c/ag-devops
+copilot plugin install ag-devops@ag-devops-marketplace
+
+# Team auto-install — add to your app repo's .claude/settings.json
+{
+  "extraKnownMarketplaces": {
+    "ag-devops-marketplace": { "source": { "source": "github", "repo": "bcgov-c/ag-devops" } }
+  },
+  "enabledPlugins": { "ag-devops@ag-devops-marketplace": true }
+}
+```
+
+### Scripted Skills
+
+Each skill has a `templates/` directory and a `scripts/generate.py` that renders templates and writes output files directly to the workspace — no copy-paste needed.
+
+| Skill | Script invocation | Output |
+|---|---|---|
+| `scaffold-deployment` | `python scripts/generate.py --name web-api --port 8080` | `gitops/templates/web-api-deployment.yaml` |
+| `scaffold-service` | `python scripts/generate.py --name web-api --port 8080` | `gitops/templates/web-api-service.yaml` |
+| `scaffold-route` | `python scripts/generate.py --name web-api --data-class low` | `gitops/templates/web-api-route.yaml` |
+| `scaffold-networkpolicy` | `python scripts/generate.py --name web-api --ingress-from-router` | `gitops/templates/web-api-networkpolicy.yaml` |
+| `init-emerald-repo` | `python scripts/init.py --project my-app --registry ghcr.io/bcgov-c` | Full repo boilerplate (10 files) |
+
+### Template substitution
+
+All templates use `@@VAR@@`-style markers (not Jinja2) to avoid conflicts with Helm's `{{ }}` Go template syntax. Python scripts use plain `str.replace()` — no extra dependencies required.
+
+### Agents
+
+| Agent | Role |
+|---|---|
+| `init-emerald` | Asks 8 questions → runs `init-emerald-repo` skill → bootstraps `.github/workflows/`, `gitops/`, `Makefile`, `CODEOWNERS` |
+| `scaffold-emerald-app` | Topology-aware orchestrator — calls all 4 scaffold skills per component, auto-generates NetworkPolicies |
 ## Key documentation
 
 - Full CI reference: `docs/CI.md`

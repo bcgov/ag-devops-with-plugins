@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Generate a NetworkPolicy for web-api that allows ingress from the router and egress to postgres",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Create a HorizontalPodAutoscaler for web-api",
+    "should_trigger": false
+  }
+]

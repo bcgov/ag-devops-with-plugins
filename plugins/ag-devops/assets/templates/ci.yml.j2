@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  restore:
+    uses: ./.github/workflows/dotnet-8-dependencies.yml
+    with:
+      dotnet_build_path: @@SOLUTION_PATH@@
+
+  build:
+    needs: restore
+    uses: ./.github/workflows/dotnet-8-build.yml
+    with:
+      dotnet_build_path: @@SOLUTION_PATH@@
+      warn_as_error: true
+
+  lint:
+    needs: restore
+    uses: ./.github/workflows/dotnet-8-lint.yml
+    with:
+      project_path: .
+
+  test:
+    needs: build
+    uses: ./.github/workflows/dotnet-8-tests-msbuild.yml
+    with:
+      unit_test_folder: "@@TEST_FOLDERS@@"
+      coverage_threshold: 80
+      coverage_threshold_type: "line,branch"

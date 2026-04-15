@@ -1,0 +1,25 @@
+name: SAST and Secrets Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: bcgov-c/ag-devops/ci/security/sast@main
+        with:
+          project-key: @@PROJECT_KEY@@
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-host-url: @@SONAR_HOST@@
+          sources: @@SOURCES@@
+          coverage-report: @@COVERAGE_REPORT@@
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          gitleaks_license: ${{ secrets.GITLEAKS_LICENSE }}

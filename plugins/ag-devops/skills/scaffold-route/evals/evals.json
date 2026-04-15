@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Create an OpenShift Route for web-api to expose it externally",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Generate a StatefulSet for postgres",
+    "should_trigger": false
+  }
+]

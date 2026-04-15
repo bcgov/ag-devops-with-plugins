@@ -3,7 +3,7 @@
   "description": "BC Government AG DevOps plugin marketplace — OpenShift Emerald deployment toolkit for AG application teams",
   "owner": {
     "name": "BC Government - Attorney General",
-    "email": "connect.richfrem@gmail.com"
+    "email": "richard.fremmerlid@gov.bc.ca"
   },
   "plugins": [
     {

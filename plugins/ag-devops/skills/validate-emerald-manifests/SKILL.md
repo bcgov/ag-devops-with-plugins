@@ -1,6 +1,9 @@
 ---
 name: validate-emerald-manifests
 description: Use when checking if a Helm chart is ready to deploy to OpenShift Emerald, when policy checks are failing in CI, when datree or polaris or kube-linter or conftest report errors, or when asked to validate or lint Kubernetes manifests
+allowed-tools:
+  - Read
+  - Bash
 ---
 
 # Validate Emerald Manifests

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Set up GitHub Actions CI for my .NET 8 project using ag-devops templates",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Create a Deployment for my web API",
+    "should_trigger": false
+  }
+]

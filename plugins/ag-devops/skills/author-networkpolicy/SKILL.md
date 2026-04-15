@@ -1,6 +1,9 @@
 ---
 name: author-networkpolicy
 description: Use when writing or fixing a Kubernetes NetworkPolicy for OpenShift Emerald, when Conftest or Polaris reports allow-all or missing NetworkPolicy failures, or when configuring traffic between services in a deny-by-default namespace
+allowed-tools:
+  - Read
+  - Bash
 ---
 
 # Author NetworkPolicy for Emerald

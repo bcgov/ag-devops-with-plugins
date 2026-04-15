@@ -1,0 +1,5 @@
+{{- $p := dict "Values" .Values -}}
+{{- $_ := set $p "ApplicationGroup" .Values.project -}}
+{{- $_ := set $p "Name" "@@NAME@@" -}}
+{{- $_ := set $p "ModuleValues" .Values.@@VALUES_KEY@@ -}}
+{{ include "ag-template.pdb" $p }}

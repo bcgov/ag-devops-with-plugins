@@ -1,0 +1,12 @@
+[
+  {
+    "id": "eval-1",
+    "prompt": "Generate a StatefulSet for postgres database on port 5432",
+    "should_trigger": true
+  },
+  {
+    "id": "eval-2",
+    "prompt": "Generate a Deployment for web-api",
+    "should_trigger": false
+  }
+]
