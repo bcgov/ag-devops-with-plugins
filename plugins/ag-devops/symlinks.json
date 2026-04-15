@@ -398,18 +398,6 @@
       "description": "Shared reference for validate-emerald-manifests"
     },
     {
-      "src": "plugins/ag-devops/references/SIMPLE-API.md",
-      "dst": "plugins/ag-devops/skills/scaffold-openshift-deployment/references/SIMPLE-API.md",
-      "strategy": "symlink",
-      "description": "Shared reference for scaffold-openshift-deployment"
-    },
-    {
-      "src": "plugins/ag-devops/references/EXAMPLES.md",
-      "dst": "plugins/ag-devops/skills/scaffold-openshift-deployment/references/EXAMPLES.md",
-      "strategy": "symlink",
-      "description": "Shared reference for scaffold-openshift-deployment"
-    },
-    {
       "src": "plugins/ag-devops/assets/policies/network-policies.rego",
       "dst": "plugins/ag-devops/skills/scaffold-networkpolicy/assets/policies/network-policies.rego",
       "strategy": "symlink",
@@ -558,12 +546,6 @@
       "dst": "plugins/ag-devops/skills/scaffold-sast-ci/scripts/scaffold.py",
       "strategy": "symlink",
       "description": "Shared scaffold CLI for scaffold-sast-ci"
-    },
-    {
-      "src": "plugins/ag-devops/scripts/scaffold.py",
-      "dst": "plugins/ag-devops/skills/scaffold-openshift-deployment/scripts/scaffold.py",
-      "strategy": "symlink",
-      "description": "Shared scaffold CLI for scaffold-openshift-deployment"
     },
     {
       "src": "plugins/ag-devops/scripts/scaffold.py",

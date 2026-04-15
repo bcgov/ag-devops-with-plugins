@@ -1,0 +1,33 @@
+name: Plugin Tests
+
+on:
+  pull_request:
+    paths:
+      - "plugins/**"
+      - "tests/**"
+      - "Makefile"
+  push:
+    branches:
+      - main
+    paths:
+      - "plugins/**"
+      - "tests/**"
+
+jobs:
+  pytest:
+    name: Run pytest
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: pip install pytest pyyaml
+
+      - name: Run tests
+        run: pytest tests/ -v

@@ -55,9 +55,9 @@ def find_policy_dir(explicit: str) -> str:
 
 def run(cmd: list, label: str, fail_on_error: bool = True) -> tuple[int, str, str]:
     """Run a command, return (returncode, stdout, stderr)."""
-    print(f"\n{'─' * 60}")
+    print(f"\n{'-' * 60}")
     print(f"  [{label}]  {' '.join(cmd)}")
-    print(f"{'─' * 60}")
+    print(f"{'-' * 60}")
     result = subprocess.run(cmd, capture_output=False, text=True)
     return result.returncode
 
@@ -65,7 +65,7 @@ def run(cmd: list, label: str, fail_on_error: bool = True) -> tuple[int, str, st
 def check_tool(name: str) -> bool:
     found = shutil.which(name) is not None
     if not found:
-        print(f"  ⚠  {name} not found in PATH — skipping this check")
+        print(f"  WARN: {name} not found in PATH -- skipping this check")
     return found
 
 
@@ -118,7 +118,7 @@ def main() -> None:
                         "--values", values_file, "--output-dir", tmpdir]
             rc = run(helm_cmd, "helm template")
             if rc != 0:
-                print("\n✗ helm template failed — fix chart errors before running policy tools")
+                print("\nFAIL: helm template failed -- fix chart errors before running policy tools")
                 sys.exit(1)
 
             # Collect all rendered YAML into one file
@@ -177,13 +177,13 @@ def main() -> None:
                 if args.tool:
                     sys.exit(rc)
 
-    print(f"\n{'═' * 60}")
+    print(f"\n{'=' * 60}")
     if failures:
-        print(f"  ✗ FAILED: {', '.join(failures)}")
+        print(f"  FAIL: {', '.join(failures)}")
         print(f"  Fix the issues above and re-run: python ./scripts/validate.py --chart-dir gitops/")
         sys.exit(1)
     else:
-        print("  ✓ All policy checks passed!")
+        print("  PASS: All policy checks passed!")
         sys.exit(0)
 
 

@@ -7,26 +7,47 @@ allowed-tools:
   - Write
 command: python ./scripts/scaffold.py --type externalsecret --name "$NAME" --output-dir "$OUTPUT_DIR"
 ---
-# 
 
-Generate a policy-compliant $(System.Collections.Hashtable.type) resource using the ag-helm-templates library.
+# Scaffold ExternalSecret
+
+Generate an ExternalSecret Helm template that syncs secrets from BC Gov Vault into a Kubernetes Secret.
+Output is written directly to `gitops/templates/`.
 
 ## Parameters
 
 | Flag | Required | Default | Description |
 |---|:---:|---|---|
-| `--name` | ✅ | — | Component name (kebab-case) |
+| `--name` | ✅ | — | Component name (kebab-case, e.g. `web-api`) |
 | `--output-dir` | | `gitops/templates` | Destination directory |
 
 ## Usage
 
 ```bash
-python ./scripts/scaffold.py --type externalsecret --name my-component --output-dir gitops/templates
+python ./scripts/scaffold.py --type externalsecret --name web-api --output-dir gitops/templates
 ```
 
-## Examples
+## Output
 
-**Agent call:**
+`gitops/templates/<name>-externalsecret.yaml` — an ExternalSecret resource that references the component SecretStore.
+
+## Required values.yaml additions
+
+Add a stanza under the component camelCase key:
+
+```yaml
+webApi:
+  dataClass: medium
+  vault:
+    path: apps/data/my-namespace/web-api
+    keys:
+      - DB_PASSWORD
+      - API_KEY
 ```
-python ./scripts/scaffold.py --type externalsecret --name my-component --output-dir gitops/templates
-```
+
+## Notes
+
+- ExternalSecret requires a matching **SecretStore** (`scaffold-externalsecret` does not create one — provision via platform ops).
+- The Vault path convention for BC Gov Emerald is: `apps/data/<namespace>/<component>`.
+- Secrets are synced on a configurable refresh interval (default: 1m).
+- Always pair with a NetworkPolicy allowing egress to Vault (port 8200).
+- The generated Kubernetes Secret name matches `<name>` — reference it in your Deployment via `envFrom.secretRef`.

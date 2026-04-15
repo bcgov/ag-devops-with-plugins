@@ -77,7 +77,7 @@ def write_file(path: str, content: str, overwrite: bool) -> None:
         return
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(content)
-    print(f"  ✓  {path}")
+    print(f"  [OK] {path}")
 
 
 def append_gitignore(target_dir: str, additions: str) -> None:
@@ -91,11 +91,11 @@ def append_gitignore(target_dir: str, additions: str) -> None:
             return
         with open(gi_path, "a") as fh:
             fh.write("\n" + additions)
-        print(f"  ✓  appended Helm entries to {gi_path}")
+        print(f"  [OK] appended Helm entries to {gi_path}")
     else:
         with open(gi_path, "w") as fh:
             fh.write(additions)
-        print(f"  ✓  {gi_path}")
+        print(f"  [OK] {gi_path}")
 
 
 def main():

@@ -5,7 +5,7 @@ allowed-tools:
   - Bash
   - Read
   - Write
-command: python ./scripts/scaffold.py --type serviceaccount --name "$NAME" --output-dir "$OUTPUT_DIR"
+command: python ./scripts/scaffold.py --type serviceaccount --name "$NAME" --automount false --output-dir "$OUTPUT_DIR"
 ---
 
 # Scaffold ServiceAccount

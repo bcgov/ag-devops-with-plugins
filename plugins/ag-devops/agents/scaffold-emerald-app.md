@@ -50,7 +50,8 @@ For each component, run scripts in this order:
 
 ### 3a. Deployment (every component)
 ```bash
-python plugins/ag-devops/skills/scaffold-deployment/scripts/generate.py \
+python ./scripts/scaffold.py \
+  --type deployment \
   --name <NAME> \
   --port <PORT> \
   --data-class <DATA_CLASS> \
@@ -59,7 +60,8 @@ python plugins/ag-devops/skills/scaffold-deployment/scripts/generate.py \
 
 ### 3b. Service (every component that receives traffic)
 ```bash
-python plugins/ag-devops/skills/scaffold-service/scripts/generate.py \
+python ./scripts/scaffold.py \
+  --type service \
   --name <NAME> \
   --port <PORT> \
   --output-dir gitops/templates
@@ -67,7 +69,8 @@ python plugins/ag-devops/skills/scaffold-service/scripts/generate.py \
 
 ### 3c. Route (only externally-exposed components)
 ```bash
-python plugins/ag-devops/skills/scaffold-route/scripts/generate.py \
+python ./scripts/scaffold.py \
+  --type route \
   --name <NAME> \
   --port <PORT> \
   --data-class <DATA_CLASS> \
@@ -76,7 +79,8 @@ python plugins/ag-devops/skills/scaffold-route/scripts/generate.py \
 
 ### 3d. NetworkPolicy (every component — no exceptions)
 ```bash
-python plugins/ag-devops/skills/scaffold-networkpolicy/scripts/generate.py \
+python ./scripts/scaffold.py \
+  --type networkpolicy \
   --name <NAME> \
   --port <PORT> \
   [--ingress-from-router] \
